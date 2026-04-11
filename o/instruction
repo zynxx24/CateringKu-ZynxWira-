@@ -1,0 +1,3 @@
+bash run.sh dev
+
+http://localhost:8000
