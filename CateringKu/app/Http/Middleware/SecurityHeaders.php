@@ -15,6 +15,7 @@ class SecurityHeaders
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
+        $isDev = config('app.env') === 'local';
 
         // ── Anti-Sniffing ──────────────────────────────────
         // Prevent MIME type sniffing (stop IE/Chrome from guessing)
@@ -43,23 +44,41 @@ class SecurityHeaders
         ]));
 
         // ── Cross-Origin Policies ───────────────────────────
-        // Prevent other sites from embedding our resources
-        $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
-        // Prevent window.opener attacks
-        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        // Keep dev relaxed to avoid noisy browser warnings on non-HTTPS/local binds.
+        $response->headers->set('Cross-Origin-Resource-Policy', $isDev ? 'cross-origin' : 'same-origin');
+        if (! $isDev) {
+            $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        }
 
         // ── Content Security Policy ─────────────────────────
-        // In dev: allow Vite dev server (port 5173) for HMR & asset loading
-        $isDev = config('app.env') === 'local';
-        $viteOrigins = $isDev ? ' http://127.0.0.1:5173 http://localhost:5173 http://[::1]:5173' : '';
+        // In dev: allow common Vite dev origins for HMR & asset loading.
+        $viteScriptOrigins = '';
+        $viteConnectOrigins = '';
+
+        if ($isDev) {
+            $appHost = parse_url((string) config('app.url'), PHP_URL_HOST);
+            $viteHosts = array_values(array_unique(array_filter([
+                '127.0.0.1',
+                'localhost',
+                '0.0.0.0',
+                $appHost,
+                $request->getHost(),
+            ])));
+
+            $httpOrigins = array_map(fn (string $host) => "http://{$host}:5173", $viteHosts);
+            $wsOrigins = array_map(fn (string $host) => "ws://{$host}:5173", $viteHosts);
+
+            $viteScriptOrigins = ' '.implode(' ', $httpOrigins);
+            $viteConnectOrigins = ' '.implode(' ', [...$httpOrigins, ...$wsOrigins]);
+        }
 
         $cspDirectives = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'{$viteOrigins}", // unsafe-eval for Vite HMR
-            "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://fonts.googleapis.com{$viteOrigins}",
-            "font-src 'self' https://fonts.bunny.net https://fonts.gstatic.com data:{$viteOrigins}",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'{$viteScriptOrigins}", // unsafe-eval for Vite HMR
+            "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://fonts.googleapis.com{$viteScriptOrigins}",
+            "font-src 'self' https://fonts.bunny.net https://fonts.gstatic.com data:{$viteScriptOrigins}",
             "img-src 'self' data: blob: https:",
-            "connect-src 'self' ws://127.0.0.1:5173 ws://localhost:5173 ws://[::1]:5173 wss: https:{$viteOrigins}", // WebSocket for Vite HMR
+            "connect-src 'self' wss: https:{$viteConnectOrigins}", // WebSocket for Vite HMR
             "media-src 'self'",
             "object-src 'none'",
             "child-src 'self'",

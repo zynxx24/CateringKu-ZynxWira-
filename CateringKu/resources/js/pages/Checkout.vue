@@ -60,46 +60,46 @@ const paymentCategories = [
     {
         method: 'bank_transfer',
         label: 'Transfer Bank',
-        icon: '🏦',
+        shortLabel: 'Bank',
         description: 'Transfer manual ke rekening bank',
         providers: [
-            { id: 'bca', name: 'BCA', color: '#003399' },
-            { id: 'bni', name: 'BNI', color: '#F05A22' },
-            { id: 'bri', name: 'BRI', color: '#00529C' },
-            { id: 'mandiri', name: 'Mandiri', color: '#003876' },
+            { id: 'bca', name: 'BCA', logo: 'BCA', theme: 'from-blue-600/12 to-blue-500/4 text-blue-700 ring-blue-100 dark:text-blue-300 dark:ring-blue-900/40' },
+            { id: 'bni', name: 'BNI', logo: 'BNI', theme: 'from-orange-500/12 to-orange-400/4 text-orange-700 ring-orange-100 dark:text-orange-300 dark:ring-orange-900/40' },
+            { id: 'bri', name: 'BRI', logo: 'BRI', theme: 'from-sky-600/12 to-sky-500/4 text-sky-700 ring-sky-100 dark:text-sky-300 dark:ring-sky-900/40' },
+            { id: 'mandiri', name: 'Mandiri', logo: 'MDR', theme: 'from-amber-500/12 to-yellow-400/4 text-amber-700 ring-amber-100 dark:text-amber-300 dark:ring-amber-900/40' },
         ]
     },
     {
         method: 'e-wallet',
         label: 'E-Wallet',
-        icon: '📱',
+        shortLabel: 'Wallet',
         description: 'Bayar lewat dompet digital',
         providers: [
-            { id: 'dana', name: 'DANA', color: '#108EE9' },
-            { id: 'gopay', name: 'GoPay', color: '#00AED6' },
-            { id: 'ovo', name: 'OVO', color: '#4C2A86' },
-            { id: 'shopeepay', name: 'ShopeePay', color: '#EE4D2D' },
+            { id: 'dana', name: 'DANA', logo: 'DANA', theme: 'from-sky-600/12 to-sky-400/4 text-sky-700 ring-sky-100 dark:text-sky-300 dark:ring-sky-900/40' },
+            { id: 'gopay', name: 'GoPay', logo: 'GO', theme: 'from-cyan-500/12 to-cyan-400/4 text-cyan-700 ring-cyan-100 dark:text-cyan-300 dark:ring-cyan-900/40' },
+            { id: 'ovo', name: 'OVO', logo: 'OVO', theme: 'from-violet-600/12 to-violet-400/4 text-violet-700 ring-violet-100 dark:text-violet-300 dark:ring-violet-900/40' },
+            { id: 'shopeepay', name: 'ShopeePay', logo: 'SP', theme: 'from-orange-500/12 to-red-400/4 text-orange-700 ring-orange-100 dark:text-orange-300 dark:ring-orange-900/40' },
         ]
     },
     {
         method: 'qris',
         label: 'QRIS',
-        icon: '📲',
+        shortLabel: 'QR',
         description: 'Scan QR untuk pembayaran instan',
         providers: [
-            { id: 'qris', name: 'QRIS', color: '#E31937' },
+            { id: 'qris', name: 'QRIS', logo: 'QR', theme: 'from-rose-500/12 to-red-400/4 text-rose-700 ring-rose-100 dark:text-rose-300 dark:ring-rose-900/40' },
         ]
     },
     {
         method: 'virtual_account',
         label: 'Virtual Account',
-        icon: '🏧',
+        shortLabel: 'VA',
         description: 'Bayar via nomor virtual account',
         providers: [
-            { id: 'bca_va', name: 'BCA VA', color: '#003399' },
-            { id: 'bni_va', name: 'BNI VA', color: '#F05A22' },
-            { id: 'bri_va', name: 'BRI VA', color: '#00529C' },
-            { id: 'mandiri_va', name: 'Mandiri VA', color: '#003876' },
+            { id: 'bca_va', name: 'BCA VA', logo: 'BCA', theme: 'from-blue-600/12 to-blue-500/4 text-blue-700 ring-blue-100 dark:text-blue-300 dark:ring-blue-900/40' },
+            { id: 'bni_va', name: 'BNI VA', logo: 'BNI', theme: 'from-orange-500/12 to-orange-400/4 text-orange-700 ring-orange-100 dark:text-orange-300 dark:ring-orange-900/40' },
+            { id: 'bri_va', name: 'BRI VA', logo: 'BRI', theme: 'from-sky-600/12 to-sky-500/4 text-sky-700 ring-sky-100 dark:text-sky-300 dark:ring-sky-900/40' },
+            { id: 'mandiri_va', name: 'Mandiri VA', logo: 'MDR', theme: 'from-amber-500/12 to-yellow-400/4 text-amber-700 ring-amber-100 dark:text-amber-300 dark:ring-amber-900/40' },
         ]
     },
 ]
@@ -126,6 +126,21 @@ const activeProviders = computed(() => {
     const cat = paymentCategories.find(c => c.method === selectedCategory.value)
     return cat ? cat.providers : []
 })
+
+function paymentCategoryIcon(method: string) {
+    const icons: Record<string, string> = {
+        bank_transfer: 'M4 7h16M6 7V5h12v2M6 10v7M10 10v7M14 10v7M18 10v7M3 19h18',
+        'e-wallet': 'M4 9h16v9H4zM15 6H9a2 2 0 0 0-2 2v1h10V8a2 2 0 0 0-2-2zM14 13h3',
+        qris: 'M5 5h5v5H5zM14 5h5v5h-5zM5 14h5v5H5zM14 14h2v2h-2zM17 14h2v5h-5v-2h3z',
+        virtual_account: 'M4 6h16v12H4zM7 15h4M7 11h6M16.5 9.5h.01',
+    }
+
+    return icons[method] || icons.bank_transfer
+}
+
+function providerBadgeClass(theme: string) {
+    return `bg-gradient-to-br ${theme}`
+}
 
 // --- Quantity Calculation Algorithm ---
 // Each cart item quantity is multiplied by num_people
@@ -301,13 +316,23 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
                             v-for="cat in paymentCategories" :key="cat.method"
                             type="button"
                             @click="selectPaymentCategory(cat.method)"
-                            class="relative p-4 rounded-xl border-2 text-center transition-all duration-200 text-sm group"
+                            class="relative rounded-2xl border-2 p-4 text-left transition-all duration-200 group"
                             :class="selectedCategory === cat.method
                                 ? 'border-ck-primary bg-gradient-to-b from-ck-primary/5 to-ck-primary/10 text-ck-primary shadow-sm shadow-ck-primary/10'
                                 : 'border-[var(--ck-surface-border)] text-[var(--ck-text-secondary)] hover:border-[var(--ck-text-muted)] hover:shadow-sm'"
                         >
-                            <div class="text-2xl mb-1.5 transition-transform duration-200 group-hover:scale-110">{{ cat.icon }}</div>
-                            <div class="font-semibold text-xs">{{ cat.label }}</div>
+                            <div class="mb-3 flex items-start justify-between gap-3">
+                                <div class="flex h-11 w-11 items-center justify-center rounded-xl border border-current/10 bg-white/80 text-current shadow-sm dark:bg-white/5">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path :d="paymentCategoryIcon(cat.method)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" />
+                                    </svg>
+                                </div>
+                                <span class="rounded-lg border border-current/10 bg-white/70 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] dark:bg-white/5">
+                                    {{ cat.shortLabel }}
+                                </span>
+                            </div>
+                            <div class="font-semibold text-sm leading-tight">{{ cat.label }}</div>
+                            <p class="mt-1 text-xs leading-relaxed opacity-80">{{ cat.description }}</p>
                             <!-- Active indicator -->
                             <div v-if="selectedCategory === cat.method" class="absolute -top-1 -right-1 w-5 h-5 bg-ck-primary rounded-full flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
@@ -324,14 +349,24 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
                                     v-for="provider in activeProviders" :key="provider.id"
                                     type="button"
                                     @click="selectProvider(provider.id)"
-                                    class="px-4 py-3 rounded-lg border-2 text-center transition-all duration-200 text-sm font-semibold"
+                                    class="rounded-xl border-2 p-3 text-left transition-all duration-200"
                                     :class="form.payment_provider === provider.id
                                         ? 'border-ck-primary bg-[var(--ck-surface)] text-ck-primary shadow-sm'
                                         : 'border-transparent bg-[var(--ck-surface)] text-[var(--ck-text-secondary)] hover:border-[var(--ck-surface-border)]'"
                                 >
-                                    <div class="w-3 h-3 rounded-full mx-auto mb-1.5" :style="{ backgroundColor: provider.color }"></div>
-                                    {{ provider.name }}
+                                    <div :class="['mb-3 flex h-11 items-center justify-center rounded-xl ring-1 shadow-sm', providerBadgeClass(provider.theme)]">
+                                        <span class="text-sm font-black tracking-[0.2em]">{{ provider.logo }}</span>
+                                    </div>
+                                    <div class="text-sm font-semibold leading-tight">{{ provider.name }}</div>
                                 </button>
+                            </div>
+                        </div>
+                    </transition>
+
+                    <transition name="slide">
+                        <div v-if="activeProviders.length === 1" class="mt-4">
+                            <div class="rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-300">
+                                Provider otomatis dipilih: <span class="font-semibold">{{ activeProviders[0].name }}</span>
                             </div>
                         </div>
                     </transition>

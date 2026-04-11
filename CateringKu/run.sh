@@ -16,7 +16,7 @@
 # ║    stop     → Hentikan semua proses                      ║
 # ╚══════════════════════════════════════════════════════════╝
 
-set -e
+set -Ee
 
 # ─── Auto-cd ke folder project ───────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -38,10 +38,28 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # ─── Helpers ─────────────────────────────────────────────
+timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
 info()    { echo -e "${BLUE}[INFO]${NC} $1"; }
 success() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn()    { echo -e "${YELLOW}[!]${NC} $1"; }
 error()   { echo -e "${RED}[✗]${NC} $1"; }
+debug()   { echo -e "${CYAN}[DEBUG]${NC} $1"; }
+
+on_error() {
+    local exit_code=$?
+    local line_no=$1
+    local command=${2:-unknown}
+    error "Script gagal di baris ${line_no}: ${command}"
+    error "Exit code: ${exit_code}"
+    exit "$exit_code"
+}
+
+trap 'on_error "${LINENO}" "${BASH_COMMAND}"' ERR
+
+LOG_DIR="$SCRIPT_DIR/storage/logs/dev-runner"
+PHP_DEV_LOG="$LOG_DIR/php-dev.log"
+VITE_DEV_LOG="$LOG_DIR/vite-dev.log"
+RUNNER_LOG="$LOG_DIR/runner.log"
 
 banner() {
     echo -e "${CYAN}"
@@ -86,6 +104,35 @@ check_env() {
             exit 1
         fi
     fi
+}
+
+prepare_log_dir() {
+    mkdir -p "$LOG_DIR"
+    touch "$PHP_DEV_LOG" "$VITE_DEV_LOG" "$RUNNER_LOG" "$SCRIPT_DIR/storage/logs/laravel.log"
+}
+
+log_runner() {
+    local message="[$(timestamp)] $1"
+    echo "$message" >> "$RUNNER_LOG"
+}
+
+print_dev_diagnostics() {
+    prepare_log_dir
+
+    info "Mode debug runner aktif"
+    debug "Project dir : $SCRIPT_DIR"
+    debug "PHP         : $(command -v php)"
+    debug "Node        : $(command -v node)"
+    debug "NPM         : $(command -v npm)"
+    debug "Composer    : $(command -v composer || echo 'tidak ditemukan')"
+    debug "APP_ENV     : ${APP_ENV:-belum diset}"
+    debug "APP_DEBUG   : ${APP_DEBUG:-belum diset}"
+    debug "Log runner  : $RUNNER_LOG"
+    debug "Log PHP     : $PHP_DEV_LOG"
+    debug "Log Vite    : $VITE_DEV_LOG"
+    debug "Log Laravel : $SCRIPT_DIR/storage/logs/laravel.log"
+
+    log_runner "Starting dev runner"
 }
 
 # ─── Commands ────────────────────────────────────────────
@@ -149,6 +196,7 @@ cmd_dev() {
     check_php
     check_node
     check_env
+    print_dev_diagnostics
 
     info "Memutus port 8000 dan 5173..."
     lsof -ti:8000,5173 | xargs kill -9 2>/dev/null || true
@@ -161,12 +209,22 @@ cmd_dev() {
     echo -e "  ${CYAN}Vite HMR${NC} → ${BOLD}http://localhost:5173${NC}"
     echo ""
     info "Tekan ${BOLD}Ctrl+C${NC} untuk menghentikan kedua server"
+    info "Log debug tersimpan di ${BOLD}$LOG_DIR${NC}"
     echo ""
 
     # Clear cache sebelum dev
+    log_runner "Clearing Laravel caches"
     php artisan config:clear 2>/dev/null || true
     php artisan route:clear 2>/dev/null || true
     php artisan view:clear 2>/dev/null || true
+
+    local php_cmd="php -d display_errors=1 -d error_reporting=E_ALL artisan serve --host=0.0.0.0 --port=8000 2>&1 | tee -a \"$PHP_DEV_LOG\""
+    local vite_cmd="npm run dev -- --host 0.0.0.0 --debug 2>&1 | tee -a \"$VITE_DEV_LOG\""
+
+    debug "Command PHP  : $php_cmd"
+    debug "Command Vite : $vite_cmd"
+    log_runner "PHP command: $php_cmd"
+    log_runner "Vite command: $vite_cmd"
 
     # Jalankan PHP + Vite secara bersamaan
     # Jika 'concurrently' tersedia, gunakan itu
@@ -174,15 +232,17 @@ cmd_dev() {
         npx concurrently \
             --names "PHP,Vite" \
             --prefix-colors "magenta,cyan" \
+            --prefix "[{name}] {time}" \
+            --timestamp-format "HH:mm:ss" \
             --kill-others \
-            "php artisan serve --host=0.0.0.0 --port=8000" \
-            "npm run dev"
+            "bash -lc '$php_cmd'" \
+            "bash -lc '$vite_cmd'"
     else
         # Fallback: jalankan di background
-        php artisan serve --host=0.0.0.0 --port=8000 &
+        bash -lc "$php_cmd" &
         PHP_PID=$!
 
-        npm run dev &
+        bash -lc "$vite_cmd" &
         VITE_PID=$!
 
         # Trap Ctrl+C untuk kill kedua proses

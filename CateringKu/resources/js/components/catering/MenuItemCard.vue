@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getMenuPlaceholder } from '@/lib/ui-media'
 import { router } from '@inertiajs/vue3'
 
 interface MenuItem {
@@ -36,8 +37,7 @@ function addToCart(menuItemId: number) {
     <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 card-hover group">
         <!-- Image -->
         <div class="h-36 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center relative overflow-hidden">
-            <img v-if="item.image_url" :src="item.image_url" :alt="item.item_name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            <span v-else class="text-4xl">🍽️</span>
+            <img :src="item.image_url || getMenuPlaceholder(item.item_name)" :alt="item.item_name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
 
             <div v-if="!item.is_available" class="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <span class="text-white font-semibold text-sm bg-red-500 px-3 py-1 rounded-full">Habis</span>

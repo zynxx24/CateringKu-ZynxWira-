@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CateringLayout from '@/layouts/CateringLayout.vue'
+import { getVendorPlaceholder } from '@/lib/ui-media'
 import { Head, Link } from '@inertiajs/vue3'
 
 interface Vendor {
@@ -37,11 +38,6 @@ const features = [
     { title: 'Proses Cepat', desc: 'Pesan dalam hitungan menit, terima tepat waktu', icon: '⚡', color: 'from-blue-100 to-cyan-200 dark:from-blue-900/40 dark:to-cyan-900/30' },
     { title: 'Pembayaran Mudah', desc: 'Berbagai metode pembayaran tersedia', icon: '💳', color: 'from-purple-100 to-violet-200 dark:from-purple-900/40 dark:to-violet-900/30' },
 ]
-
-// Dummy vendor photos from picsum
-function vendorPhoto(vendorId: number) {
-    return `https://picsum.photos/seed/vendor${vendorId}/600/400`
-}
 
 function formatRating(r: number) {
     return Number(r).toFixed(1)
@@ -124,7 +120,7 @@ function formatRating(r: number) {
                 >
                     <!-- Image -->
                     <div class="h-48 gradient-hero flex items-center justify-center text-white relative overflow-hidden">
-                        <img :src="vendor.logo_url || vendorPhoto(vendor.vendor_id)" :alt="vendor.vendor_name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <img :src="vendor.logo_url || getVendorPlaceholder(vendor.vendor_name)" :alt="vendor.vendor_name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
 
                         <div class="absolute top-4 right-4 bg-white/90 dark:bg-[var(--ck-surface)]/90 glass px-3 py-1 rounded-full text-sm font-semibold text-ck-primary shadow-lg flex items-center">
                             <svg class="w-4 h-4 mr-1 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>

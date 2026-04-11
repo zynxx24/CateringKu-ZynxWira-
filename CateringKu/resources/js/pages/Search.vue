@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CateringLayout from '@/layouts/CateringLayout.vue'
+import { getVendorPlaceholder } from '@/lib/ui-media'
 import { Head, Link, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 
@@ -23,7 +24,6 @@ function applyFilters() {
 }
 
 function formatRating(r: number) { return Number(r).toFixed(1) }
-function vendorPhoto(id: number) { return `https://picsum.photos/seed/vendor${id}/600/400` }
 </script>
 
 <template>
@@ -73,7 +73,7 @@ function vendorPhoto(id: number) { return `https://picsum.photos/seed/vendor${id
                 class="group block bg-[var(--ck-surface)] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl dark:hover:shadow-ck-primary/5 transition-all border border-[var(--ck-surface-border)] card-hover"
             >
                 <div class="h-44 gradient-hero flex items-center justify-center text-white relative overflow-hidden">
-                    <img :src="vendor.logo_url || vendorPhoto(vendor.vendor_id)" :alt="vendor.vendor_name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img :src="vendor.logo_url || getVendorPlaceholder(vendor.vendor_name)" :alt="vendor.vendor_name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                     <div class="absolute top-3 right-3 bg-white/90 dark:bg-[var(--ck-surface)]/90 glass px-2.5 py-1 rounded-full text-xs font-bold text-ck-primary shadow flex items-center gap-1">
                         ⭐ {{ formatRating(vendor.rating) }}
                     </div>

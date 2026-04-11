@@ -84,16 +84,6 @@ cd cateringku
 
 ### 2. Setup Otomatis (Direkomendasikan)
 
-**Windows:**
-```bat
-run.bat setup
-```
-
-**Linux / macOS:**
-```bash
-bash run.sh setup
-```
-
 Perintah ini akan otomatis:
 - Install dependency Composer & NPM
 - Membuat file `.env` dari `.env.example`
@@ -102,31 +92,6 @@ Perintah ini akan otomatis:
 - Seed data test
 
 ### 3. Setup Manual (Opsional)
-
-```bash
-cd CateringKu
-
-# Install dependency
-composer install
-npm install
-
-# Konfigurasi environment
-cp .env.example .env
-php artisan key:generate
-
-# Database
-touch database/database.sqlite
-php artisan migrate --force
-php artisan db:seed --class=FullTestSeeder
-
-# Build frontend
-npm run build
-```
-
----
-
-## Menjalankan Aplikasi
-
 **Windows:**
 ```bat
 .\run.bat setup

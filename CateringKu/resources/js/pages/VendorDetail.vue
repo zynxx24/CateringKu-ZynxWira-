@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getMenuPlaceholder } from '@/lib/ui-media'
 import CateringLayout from '@/layouts/CateringLayout.vue'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import { ref } from 'vue'
@@ -14,11 +15,6 @@ function filteredItems() {
 
 function formatPrice(p: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(p)
-}
-
-// Dummy food photos for items without images
-function foodPhoto(itemId: number) {
-    return `https://picsum.photos/seed/food${itemId}/400/300`
 }
 
 function addToCart(itemId: number) {
@@ -65,7 +61,7 @@ function addToCart(itemId: number) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             <div v-for="item in filteredItems()" :key="item.item_id" class="bg-[var(--ck-surface)] rounded-2xl border border-[var(--ck-surface-border)] overflow-hidden card-hover">
                 <div class="h-40 bg-gradient-to-br from-ck-primary-light to-orange-100 dark:from-ck-primary/10 dark:to-orange-900/10 flex items-center justify-center overflow-hidden">
-                    <img :src="item.image_url || foodPhoto(item.item_id)" :alt="item.item_name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                    <img :src="item.image_url || getMenuPlaceholder(item.item_name)" :alt="item.item_name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
                 </div>
                 <div class="p-5">
                     <div class="flex justify-between items-start mb-2">
