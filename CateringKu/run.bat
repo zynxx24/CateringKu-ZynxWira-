@@ -2,27 +2,32 @@
 chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
 
-REM ╔══════════════════════════════════════════════════════════╗
-REM ║  CateringKu — Script Menjalankan Aplikasi (Windows)     ║
-REM ║  Penggunaan: run.bat [command]                           ║
-REM ║                                                          ║
-REM ║  Commands:                                               ║
-REM ║    dev      → Jalankan dev server (PHP + Vite)           ║
-REM ║    install  → Install semua dependency                   ║
-REM ║    setup    → Setup awal (install + migrate + seed)      ║
-REM ║    migrate  → Jalankan migrasi database                  ║
-REM ║    seed     → Seed database dengan data test             ║
-REM ║    fresh    → Fresh migrate + seed (HAPUS SEMUA DATA)    ║
-REM ║    build    → Build production assets                    ║
-REM ║    clear    → Clear semua cache                          ║
-REM ║    test     → Jalankan test suite                        ║
-REM ║    stop     → Hentikan semua proses                      ║
-REM ╚══════════════════════════════════════════════════════════╝
+REM ===========================================================
+REM  CateringKu - Script Menjalankan Aplikasi (Windows)
+REM  Penggunaan: run.bat [command]
+REM
+REM  Commands:
+REM    dev      - Jalankan dev server (PHP + Vite)
+REM    install  - Install semua dependency
+REM    setup    - Setup awal (install + migrate + seed)
+REM    migrate  - Jalankan migrasi database
+REM    seed     - Seed database dengan data test
+REM    fresh    - Fresh migrate + seed (HAPUS SEMUA DATA)
+REM    build    - Build production assets
+REM    clear    - Clear semua cache
+REM    test     - Jalankan test suite
+REM    stop     - Hentikan semua proses
+REM ===========================================================
 
-REM ─── Auto-cd ke folder project ───────────────────────────
+REM --- Auto-cd ke folder project ---
 cd /d "%~dp0"
 
-REM ─── Main ────────────────────────────────────────────────
+REM --- Gunakan PHP lokal jika ada ---
+if exist "%~dp0..\php83\php.exe" (
+    set "PATH=%~dp0..\php83;%PATH%"
+)
+
+REM --- Main ---
 set "COMMAND=%~1"
 if "%COMMAND%"=="" set "COMMAND=help"
 
@@ -41,21 +46,21 @@ if "%COMMAND%"=="help"    goto cmd_help
 echo [X] Command tidak dikenal: %COMMAND%
 goto cmd_help
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  BANNER
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :banner
 echo.
-echo   ╔═══════════════════════════════════════╗
-echo   ║     CateringKu Dev Server             ║
-echo   ║     Platform Katering Online           ║
-echo   ╚═══════════════════════════════════════╝
+echo   =========================================
+echo        CateringKu Dev Server
+echo        Platform Katering Online
+echo   =========================================
 echo.
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  CHECK PREREQUISITES
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :check_php
 where php >nul 2>&1
 if errorlevel 1 (
@@ -94,9 +99,9 @@ if not exist .env (
 )
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  INSTALL
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_install
 echo [INFO] Installing dependencies...
 echo.
@@ -127,11 +132,16 @@ call :check_env
 echo [OK] Semua dependency berhasil diinstall!
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  SETUP
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_setup
-call :banner
+echo.
+echo   =========================================
+echo        CateringKu Dev Server
+echo        Platform Katering Online
+echo   =========================================
+echo.
 echo [INFO] Setup awal CateringKu...
 echo.
 
@@ -157,27 +167,37 @@ echo [OK] Seeding selesai
 echo.
 
 echo.
-echo   ╔═══════════════════════════════════════════════════╗
-echo   ║  Setup Selesai!                                   ║
-echo   ║                                                   ║
-echo   ║  Akun Test:                                       ║
-echo   ║  Admin  : admin@cateringku.com / admin123         ║
-echo   ║  Vendor : vendor@cateringku.com / vendor123       ║
-echo   ║  User   : user@cateringku.com / user123           ║
-echo   ║                                                   ║
-echo   ║  Jalankan: run.bat dev                            ║
-echo   ╚═══════════════════════════════════════════════════╝
+echo   ===================================================
+echo   Setup Selesai!
+echo.
+echo   Akun Test:
+echo   Admin  : admin@cateringku.com / admin123
+echo   Vendor : vendor@cateringku.com / vendor123
+echo   User   : user@cateringku.com / user123
+echo.
+echo   Jalankan: run.bat dev
+echo   ===================================================
 echo.
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  DEV
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_dev
-call :banner
+echo.
+echo   =========================================
+echo        CateringKu Dev Server
+echo        Platform Katering Online
+echo   =========================================
+echo.
 call :check_php
 call :check_node
 call :check_env
+
+echo [INFO] Memutus port 8000 dan 5173...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8000') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5173') do taskkill /f /pid %%a >nul 2>&1
+echo [OK] Port berhasil diputuskan
 
 echo [INFO] Menjalankan CateringKu development server...
 echo.
@@ -192,7 +212,7 @@ php artisan config:clear >nul 2>&1
 php artisan route:clear >nul 2>&1
 php artisan view:clear >nul 2>&1
 
-REM Coba gunakan concurrently (lebih bagus output-nya)
+REM Coba gunakan concurrently
 where npx >nul 2>&1
 if errorlevel 1 goto dev_fallback
 
@@ -203,7 +223,6 @@ call npx concurrently --names "PHP,Vite" --prefix-colors "magenta,cyan" --kill-o
 goto :eof
 
 :dev_fallback
-REM Fallback: jalankan PHP di background dengan start, lalu Vite di foreground
 echo [INFO] Menjalankan PHP server di background...
 start "CateringKu-PHP" /min cmd /c "php artisan serve --host=0.0.0.0 --port=8000"
 
@@ -214,9 +233,9 @@ echo.
 call npm run dev
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  MIGRATE
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_migrate
 call :check_php
 echo [INFO] Menjalankan migrasi...
@@ -224,9 +243,9 @@ php artisan migrate
 echo [OK] Migrasi selesai
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  SEED
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_seed
 call :check_php
 echo [INFO] Seeding database...
@@ -239,9 +258,9 @@ echo   Vendor : vendor@cateringku.com / vendor123
 echo   User   : user@cateringku.com / user123
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  FRESH
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_fresh
 call :check_php
 echo [!] Ini akan MENGHAPUS SEMUA DATA dan membuat ulang database!
@@ -255,9 +274,9 @@ php artisan migrate:fresh --seed --seeder=FullTestSeeder --force
 echo [OK] Database berhasil di-reset dan di-seed
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  BUILD
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_build
 call :check_node
 echo [INFO] Building production assets...
@@ -265,9 +284,9 @@ call npm run build
 echo [OK] Build selesai! Assets tersedia di public\build\
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  CLEAR
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_clear
 call :check_php
 echo [INFO] Membersihkan semua cache...
@@ -279,22 +298,21 @@ php artisan event:clear
 echo [OK] Semua cache berhasil dihapus
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  TEST
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_test
 call :check_php
 echo [INFO] Menjalankan test suite...
 php artisan test
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  STOP
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_stop
 echo [INFO] Menghentikan proses...
 
-REM Kill PHP artisan serve
 taskkill /f /fi "WINDOWTITLE eq CateringKu-PHP*" >nul 2>&1
 tasklist /fi "IMAGENAME eq php.exe" | find "php.exe" >nul 2>&1
 if not errorlevel 1 (
@@ -304,7 +322,6 @@ if not errorlevel 1 (
     echo [!] PHP server tidak berjalan
 )
 
-REM Kill Node/Vite
 tasklist /fi "IMAGENAME eq node.exe" | find "node.exe" >nul 2>&1
 if not errorlevel 1 (
     taskkill /f /im node.exe >nul 2>&1
@@ -312,13 +329,24 @@ if not errorlevel 1 (
 ) else (
     echo [!] Vite server tidak berjalan
 )
+
+echo [INFO] Memutus port 8000 dan 5173...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8000') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5173') do taskkill /f /pid %%a >nul 2>&1
+echo [OK] Port berhasil diputuskan
+
 goto :eof
 
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 REM  HELP
-REM ═══════════════════════════════════════════════════════════
+REM ===========================================================
 :cmd_help
-call :banner
+echo.
+echo   =========================================
+echo        CateringKu Dev Server
+echo        Platform Katering Online
+echo   =========================================
+echo.
 echo Penggunaan: run.bat [command]
 echo.
 echo Commands:
@@ -335,7 +363,7 @@ echo   stop      Hentikan semua server
 echo   help      Tampilkan bantuan ini
 echo.
 echo Contoh:
-echo   run.bat setup    ^(Setup pertama kali^)
-echo   run.bat dev      ^(Jalankan development server^)
+echo   run.bat setup    (Setup pertama kali)
+echo   run.bat dev      (Jalankan development server)
 echo.
 goto :eof

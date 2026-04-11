@@ -51,7 +51,7 @@ class SecurityHeaders
         // ── Content Security Policy ─────────────────────────
         // In dev: allow Vite dev server (port 5173) for HMR & asset loading
         $isDev = config('app.env') === 'local';
-        $viteOrigins = $isDev ? ' http://127.0.0.1:5173 http://localhost:5173' : '';
+        $viteOrigins = $isDev ? ' http://127.0.0.1:5173 http://localhost:5173 http://[::1]:5173' : '';
 
         $cspDirectives = [
             "default-src 'self'",
@@ -59,7 +59,7 @@ class SecurityHeaders
             "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://fonts.googleapis.com{$viteOrigins}",
             "font-src 'self' https://fonts.bunny.net https://fonts.gstatic.com data:{$viteOrigins}",
             "img-src 'self' data: blob: https:",
-            "connect-src 'self' ws://127.0.0.1:5173 ws://localhost:5173 wss: https:{$viteOrigins}", // WebSocket for Vite HMR
+            "connect-src 'self' ws://127.0.0.1:5173 ws://localhost:5173 ws://[::1]:5173 wss: https:{$viteOrigins}", // WebSocket for Vite HMR
             "media-src 'self'",
             "object-src 'none'",
             "child-src 'self'",

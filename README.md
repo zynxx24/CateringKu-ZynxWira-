@@ -129,18 +129,14 @@ npm run build
 
 **Windows:**
 ```bat
-run.bat dev
+.\run.bat setup
+.\run.bat dev
 ```
 
 **Linux / macOS:**
 ```bash
+bash run.sh setup
 bash run.sh dev
-```
-
-Atau masuk ke folder `CateringKu` dan jalankan:
-```bash
-php artisan serve
-npm run dev
 ```
 
 Akses di browser: **http://localhost:8000**

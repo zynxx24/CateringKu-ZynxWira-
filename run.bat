@@ -1,9 +1,9 @@
 @echo off
 chcp 65001 >nul 2>&1
-REM ══════════════════════════════════════════════════════
-REM  CateringKu — Launcher Script (Windows)
+REM =======================================================
+REM  CateringKu - Launcher Script (Windows)
 REM  Jalankan dari folder ini: run.bat [command]
-REM ══════════════════════════════════════════════════════
+REM =======================================================
 
 set "SCRIPT_DIR=%~dp0"
 set "PROJECT_DIR=%SCRIPT_DIR%CateringKu"

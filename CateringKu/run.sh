@@ -22,6 +22,12 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# ─── Gunakan PHP lokal jika ada ─────────────────────────
+if [ -d "$SCRIPT_DIR/../php83" ]; then
+    export PATH="$SCRIPT_DIR/../php83:$PATH"
+fi
+
+
 # ─── Colors ──────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -144,6 +150,11 @@ cmd_dev() {
     check_node
     check_env
 
+    info "Memutus port 8000 dan 5173..."
+    lsof -ti:8000,5173 | xargs kill -9 2>/dev/null || true
+    success "Port berhasil diputus"
+    echo ""
+
     info "🚀 Menjalankan CateringKu development server..."
     echo ""
     echo -e "  ${CYAN}Laravel${NC}  → ${BOLD}http://localhost:8000${NC}"
@@ -243,6 +254,11 @@ cmd_stop() {
     pkill -f "artisan serve" 2>/dev/null && success "PHP server dihentikan" || warn "PHP server tidak berjalan"
     # Kill Vite
     pkill -f "vite" 2>/dev/null && success "Vite server dihentikan" || warn "Vite server tidak berjalan"
+    
+    info "🔌 Memutus port 8000 dan 5173..."
+    lsof -t -i:8000 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+    lsof -t -i:5173 2>/dev/null | xargs -r kill -9 2>/dev/null || true
+    success "Port berhasil diputuskan"
 }
 
 cmd_help() {
