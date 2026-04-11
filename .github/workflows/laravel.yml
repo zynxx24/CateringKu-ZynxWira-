@@ -1,4 +1,5 @@
 name: Laravel Tests
+
 on:
   push:
     branches: [ "main" ]
@@ -10,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./CateringKu   # ← tambah ini
+        working-directory: ./CateringKu
 
     steps:
     - name: Checkout Code
