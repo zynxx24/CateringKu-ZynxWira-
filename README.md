@@ -1,8 +1,8 @@
-# 🍽️ CateringKu
+# [![](/home/wira/tes/tes/CateringKu/public/images/logo.png)] CateringKu
 
 > Platform katering online berbasis web — menghubungkan pelanggan dengan vendor katering terpercaya.
 
-[![Laravel Tests](https://github.com/your-username/cateringku/actions/workflows/laravel.yml/badge.svg)](https://github.com/your-username/cateringku/actions/workflows/laravel.yml)
+[![Laravel Tests](https://github.com/zynxx24/cateringku/actions/workflows/laravel.yml/badge.svg)](https://github.com/zynxx24/cateringku/actions/workflows/laravel.yml)
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue?logo=php)](https://www.php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-13.x-red?logo=laravel)](https://laravel.com)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green?logo=vue.js)](https://vuejs.org)
