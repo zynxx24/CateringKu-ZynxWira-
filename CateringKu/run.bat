@@ -305,8 +305,7 @@ echo.
 
 call :info "Menjalankan CateringKu development server..."
 echo.
-echo   %CYAN%Laravel%NC%  -^> %BOLD%http://localhost:8000%NC%
-echo   %CYAN%Vite HMR%NC% -^> %BOLD%http://localhost:5173%NC%
+echo   %CYAN%Laravel%NC%  -^> %BOLD%http://0.0.0.0:8000%NC%
 echo.
 call :info "Tekan %BOLD%Ctrl+C%NC% untuk menghentikan kedua server"
 call :info "Log debug tersimpan di %BOLD%%LOG_DIR%%NC%"
