@@ -104,10 +104,10 @@
     --secondary: hsl(220 10% 93%);
     --secondary-foreground: hsl(220 15% 25%);
     --muted: hsl(220 10% 95%);
-    --muted-foreground: hsl(220 8% 50%);
+    --muted-foreground: hsl(220 9% 42%);
     --accent: hsl(220 10% 95%);
     --accent-foreground: hsl(220 15% 25%);
-    --destructive: hsl(0 72% 55%);
+    --destructive: hsl(0 72% 45%);
     --destructive-foreground: hsl(0 0% 98%);
     --border: hsl(220 10% 91%);
     --input: hsl(220 10% 89%);
@@ -134,7 +134,7 @@
     --ck-surface-border: hsl(220 10% 92%);
     --ck-text-primary: hsl(220 18% 22%);
     --ck-text-secondary: hsl(220 10% 45%);
-    --ck-text-muted: hsl(220 8% 58%);
+    --ck-text-muted: hsl(220 9% 43%);
     --ck-nav-bg: rgba(255,255,255,0.92);
     --ck-nav-border: hsl(220 10% 92%);
 }
@@ -155,7 +155,7 @@
     --secondary: hsl(235 18% 18%);
     --secondary-foreground: hsl(225 15% 78%);
     --muted: hsl(235 16% 17%);
-    --muted-foreground: hsl(225 10% 55%);
+    --muted-foreground: hsl(225 10% 66%);
     --accent: hsl(235 18% 18%);
     --accent-foreground: hsl(225 15% 78%);
     --destructive: hsl(0 72% 55%);
@@ -184,7 +184,7 @@
     --ck-surface-border: hsl(235 16% 20%);
     --ck-text-primary: hsl(225 20% 82%);
     --ck-text-secondary: hsl(225 12% 60%);
-    --ck-text-muted: hsl(225 10% 48%);
+    --ck-text-muted: hsl(225 10% 64%);
     --ck-nav-bg: rgba(26, 27, 46, 0.92);
     --ck-nav-border: hsl(235 16% 20%);
 }
@@ -216,9 +216,12 @@
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
-    /* Primary palette — warm coral/orange */
-    --color-ck-primary: #F5845C;
-    --color-ck-primary-dark: #E06A40;
+    /* Primary palette: the brand orange from the original mockups, deepened to a rust tone
+       so white text on it (5.3:1) and it as text on the warm background (5.0:1) pass WCAG AA.
+       The original light orange survives as --color-ck-glow for text on dark surfaces. */
+    --color-ck-primary: #B8461F;
+    --color-ck-primary-dark: #9A3412;
+    --color-ck-glow: #F5845C;
     --color-ck-primary-light: #FFDDD1;
     --color-ck-primary-lighter: #FFF3ED;
 
@@ -231,8 +234,8 @@
     --color-ck-bg-cream: #FFF7F3;
 
     /* Accent colors */
-    --color-ck-coral: #FF6F61;
-    --color-ck-amber: #F59E0B;
+    --color-ck-coral: #B83A2E;
+    --color-ck-amber: #A84A12;
     --color-ck-emerald: #10B981;
 
     /* Dark mode surface colors (Tokyo Night) */
@@ -309,7 +312,7 @@
 
     /* Gradients */
     .gradient-hero {
-        background: linear-gradient(135deg, #F5845C 0%, #FF6F61 40%, #F59E0B 100%);
+        background: linear-gradient(135deg, #B8461F 0%, #B83A2E 45%, #A84A12 100%);
     }
     .gradient-hero-soft {
         background: linear-gradient(135deg, #FFFAF7 0%, #FFDDD1 50%, #FFF3E0 100%);
@@ -318,7 +321,7 @@
         background: linear-gradient(135deg, hsl(235 20% 14%) 0%, hsl(235 18% 18%) 50%, hsl(235 20% 14%) 100%);
     }
     .gradient-brand {
-        background: linear-gradient(135deg, #F5845C 0%, #FF6F61 100%);
+        background: linear-gradient(135deg, #B8461F 0%, #B83A2E 100%);
     }
 
     /* Glass effect */
@@ -416,4 +419,42 @@
 }
 .animate-scale-in {
     animation: scale-in 0.2s ease-out forwards;
+}
+
+/* Accessibility baseline (antislop R-25, R-32, R-39) */
+@layer base {
+    a[href], button:not(:disabled), [role='button'], select, summary, label[for],
+    input[type='checkbox'], input[type='radio'] {
+        cursor: pointer;
+    }
+    :disabled, [aria-disabled='true'] {
+        cursor: not-allowed;
+    }
+    a[aria-disabled='true'] {
+        pointer-events: none;
+    }
+    :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 2px solid var(--color-ck-primary);
+        outline-offset: 2px;
+    }
+    .dark :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline-color: var(--color-ck-glow);
+    }
+}
+
+/* On dark surfaces the deep rust is too dim for text, so text switches to the light brand orange (6.5:1). */
+@layer utilities {
+    .dark .text-ck-primary:not(.bg-white),
+    .dark .hover\:text-ck-primary:hover:not(.bg-white) {
+        color: var(--color-ck-glow);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

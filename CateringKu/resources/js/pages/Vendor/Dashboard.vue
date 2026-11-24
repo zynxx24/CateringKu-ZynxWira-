@@ -103,31 +103,31 @@ const quickActions = [
         <template #header>
             <div>
                 <h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-                <p class="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">{{ today }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{{ today }}</p>
             </div>
         </template>
 
         <div class="max-w-6xl mx-auto space-y-6">
             <!-- Welcome Banner -->
-            <div class="relative overflow-hidden bg-gradient-to-r from-ck-primary via-orange-500 to-amber-500 rounded-2xl p-6 md:p-8 shadow-xl shadow-orange-200/30 dark:shadow-orange-900/20 animate-fade-in">
+            <div class="relative overflow-hidden bg-gradient-to-r from-ck-primary via-ck-coral to-ck-amber rounded-2xl p-6 md:p-8 shadow-xl shadow-orange-200/30 dark:shadow-orange-900/20 animate-fade-in">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4 blur-2xl"></div>
                 <div class="relative z-10">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
-                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
                                 {{ greeting }}, {{ vendor.vendor_name }}! 👋
-                            </h1>
+                            </h2>
                             <p class="text-orange-100 mt-1.5 text-sm">Kelola pesanan dan menu katering Anda dari sini.</p>
                         </div>
-                        <div class="flex items-center gap-3 bg-white/15 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
+                        <div class="flex items-center gap-3 bg-black/20 rounded-2xl px-5 py-3 border border-white/20">
                             <div class="text-2xl">⭐</div>
                             <div>
                                 <div class="flex gap-0.5 mb-0.5">
-                                    <span v-for="i in 5" :key="i" class="text-sm" :class="i <= Math.round(Number(stats.avgRating)) ? 'text-yellow-300' : 'text-white/30'">★</span>
+                                    <span v-for="i in 5" :key="i" class="text-sm" :class="i <= Math.round(Number(stats.avgRating)) ? 'text-yellow-200' : 'text-white/70'">★</span>
                                 </div>
                                 <p class="text-white font-bold text-lg leading-tight">{{ Number(stats.avgRating).toFixed(1) }}</p>
-                                <p class="text-orange-100 text-xs">Rating Anda</p>
+                                <p class="text-white text-xs">Rating Anda</p>
                             </div>
                         </div>
                     </div>
@@ -139,7 +139,7 @@ const quickActions = [
                 <div v-for="(card, index) in statCards" :key="card.key"
                      class="group relative bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-5 hover:shadow-xl hover:shadow-gray-100/50 dark:hover:shadow-black/20 hover:-translate-y-1 transition-all duration-300">
                     <div class="flex items-start justify-between mb-3">
-                        <div :class="`w-11 h-11 bg-gradient-to-br ${card.gradient} rounded-xl flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-transform duration-300`">
+                        <div :class="`w-11 h-11 bg-ck-primary-lighter dark:bg-white/5 rounded-xl flex items-center justify-center text-lg group-hover:scale-110 transition-transform duration-300`">
                             {{ card.icon }}
                         </div>
                         <div :class="`w-2 h-2 rounded-full bg-gradient-to-r ${card.gradient} animate-pulse`"></div>
@@ -156,7 +156,7 @@ const quickActions = [
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <Link v-for="action in quickActions" :key="action.label" :href="action.href"
                       class="group flex items-center gap-3 bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-4 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-black/20 hover:-translate-y-0.5 transition-all duration-200">
-                    <div :class="`w-10 h-10 bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center text-white text-lg shadow-sm group-hover:scale-110 transition-transform`">
+                    <div :class="`w-10 h-10 bg-ck-primary-lighter dark:bg-white/5 rounded-xl flex items-center justify-center text-lg group-hover:scale-110 transition-transform`">
                         {{ action.icon }}
                     </div>
                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ action.label }}</p>
@@ -169,11 +169,11 @@ const quickActions = [
                 <div class="lg:col-span-2 bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-6">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Pendapatan Mingguan</h3>
-                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">Berdasarkan pesanan terbaru</p>
+                            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Nilai pesanan per hari</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">5 pesanan terakhir, dikelompokkan menurut hari</p>
                         </div>
                         <div class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold border border-emerald-100">
-                            {{ formatPrice(stats.totalRevenue) }}
+                            Total lunas {{ formatPrice(stats.totalRevenue) }}
                         </div>
                     </div>
                     <div class="flex items-end justify-between gap-3 h-40 px-2">
@@ -188,7 +188,7 @@ const quickActions = [
                                 :style="{ height: `${bar.height}%` }">
                                 </div>
                             </div>
-                            <span :class="['text-xs font-semibold', bar.isToday ? 'text-ck-primary' : 'text-gray-400']">{{ bar.label }}</span>
+                            <span :class="['text-xs font-semibold', bar.isToday ? 'text-ck-primary' : 'text-gray-500 dark:text-gray-400']">{{ bar.label }}</span>
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@ const quickActions = [
                         <h3 class="font-bold text-gray-900 dark:text-gray-100">Pesanan Terbaru</h3>
                         <Link href="/vendor-panel/orders" class="text-xs text-ck-primary font-semibold hover:text-ck-primary-dark transition-colors">Semua →</Link>
                     </div>
-                    <div v-if="recentOrders.length === 0" class="p-8 text-center text-gray-400 text-sm">Belum ada pesanan.</div>
+                    <div v-if="recentOrders.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm">Belum ada pesanan.</div>
                     <div v-else class="divide-y divide-gray-50">
                         <div v-for="order in recentOrders" :key="order.order_id" class="px-5 py-4 hover:bg-gradient-to-r hover:from-ck-primary/[0.02] dark:hover:from-ck-primary/[0.05] hover:to-transparent transition-colors group">
                             <div class="flex items-center justify-between">
@@ -209,7 +209,7 @@ const quickActions = [
                                     </div>
                                     <div class="min-w-0">
                                         <p class="font-medium text-gray-800 dark:text-gray-200 text-sm truncate">{{ order.user?.name }}</p>
-                                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ formatDate(order.event_date) }} · {{ order.num_people }} pax</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(order.event_date) }} · {{ order.num_people }} pax</p>
                                     </div>
                                 </div>
                                 <div class="text-right shrink-0 ml-3">

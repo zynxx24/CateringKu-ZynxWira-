@@ -265,7 +265,7 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
 
 <template>
     <CateringLayout>
-        <Head title="Checkout Pesanan — CateringKu" />
+        <Head title="Checkout Pesanan | CateringKu" />
 
         <!-- Toast Popup -->
         <Transition
@@ -312,25 +312,25 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tipe Acara *</label>
-                            <select v-model="form.event_type" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]">
+                            <label for="checkout-field-1" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tipe Acara *</label>
+                            <select id="checkout-field-1" v-model="form.event_type" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]">
                                 <option value="">Pilih tipe acara</option>
                                 <option v-for="t in eventTypes" :key="t" :value="t">{{ t }}</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Jumlah Tamu *</label>
-                            <input v-model.number="form.num_people" type="number" min="1" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jumlah tamu undangan" />
+                            <label for="checkout-field-2" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Jumlah Tamu *</label>
+                            <input id="checkout-field-2" v-model.number="form.num_people" type="number" min="1" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jumlah tamu undangan" />
                             <p class="text-xs text-[var(--ck-text-muted)] mt-1">Jumlah porsi akan dihitung otomatis berdasarkan tamu</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tanggal Acara *</label>
-                            <input v-model="form.event_date" type="date" :min="minDate" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
+                            <label for="checkout-field-3" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tanggal Acara *</label>
+                            <input id="checkout-field-3" v-model="form.event_date" type="date" :min="minDate" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
                             <p v-if="form.errors.event_date" class="text-red-500 text-xs mt-1">{{ form.errors.event_date }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Waktu Acara *</label>
-                            <input v-model="form.event_time" type="time" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
+                            <label for="checkout-field-4" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Waktu Acara *</label>
+                            <input id="checkout-field-4" v-model="form.event_time" type="time" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
                         </div>
                     </div>
                 </div>
@@ -343,17 +343,17 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
                     </h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Alamat Lengkap *</label>
-                            <textarea v-model="form.delivery_address" rows="3" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jl. ... No. ..., RT/RW, Kelurahan, Kecamatan"></textarea>
+                            <label for="checkout-field-5" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Alamat Lengkap *</label>
+                            <textarea id="checkout-field-5" v-model="form.delivery_address" rows="3" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jl. ... No. ..., RT/RW, Kelurahan, Kecamatan"></textarea>
                             <p v-if="form.errors.delivery_address" class="text-red-500 text-xs mt-1">{{ form.errors.delivery_address }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Kota</label>
-                            <input v-model="form.delivery_city" type="text" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Nama kota" />
+                            <label for="checkout-field-6" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Kota</label>
+                            <input id="checkout-field-6" v-model="form.delivery_city" type="text" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Nama kota" />
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Catatan Khusus</label>
-                            <textarea v-model="form.special_request" rows="2" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Mis: alergi, pantangan, dekorasi khusus..."></textarea>
+                            <label for="checkout-field-7" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Catatan Khusus</label>
+                            <textarea id="checkout-field-7" v-model="form.special_request" rows="2" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Mis: alergi, pantangan, dekorasi khusus..."></textarea>
                         </div>
                     </div>
                 </div>

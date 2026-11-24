@@ -23,17 +23,17 @@ function formatDate(d: string) { return new Date(d).toLocaleDateString('id-ID', 
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-colors"
-                                     :class="msg.is_read ? 'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400' : 'bg-gradient-to-br from-ck-primary/20 to-ck-coral/20 text-ck-primary'">
+                                     :class="msg.is_read ? 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400' : 'bg-ck-primary-lighter text-ck-primary dark:bg-ck-primary/20'">
                                     {{ msg.name?.charAt(0) }}
                                 </div>
                                 <div>
                                     <p class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-ck-primary transition-colors">{{ msg.name }}</p>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ msg.email }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ msg.email }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span v-if="!msg.is_read" class="w-2 h-2 bg-ck-primary rounded-full animate-pulse"></span>
-                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ formatDate(msg.created_at) }}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(msg.created_at) }}</span>
                             </div>
                         </div>
                         <p class="font-medium text-gray-700 dark:text-gray-300 text-sm">{{ msg.subject }}</p>
@@ -49,7 +49,7 @@ function formatDate(d: string) { return new Date(d).toLocaleDateString('id-ID', 
             </div>
 
             <div v-if="messages.links && messages.links.length > 3" class="mt-6 flex justify-center gap-1">
-                <Link v-for="link in messages.links" :key="link.label" :href="link.url || ''" class="px-3 py-2 rounded-lg text-sm transition-colors" :class="link.active ? 'bg-ck-primary text-white shadow-sm' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
+                <Link v-for="link in messages.links" :key="link.label" :href="link.url || ''" :aria-disabled="!link.url" :tabindex="link.url ? undefined : -1" class="px-3 py-2 rounded-lg text-sm transition-colors" :class="link.active ? 'bg-ck-primary text-white shadow-sm' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
             </div>
         </div>
     </AdminLayout>

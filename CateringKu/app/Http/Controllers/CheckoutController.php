@@ -9,6 +9,7 @@ use App\Models\Promo;
 use App\Models\PromoUsage;
 use App\Services\OrderPricing;
 use App\Support\PaymentOptions;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -75,75 +76,81 @@ class CheckoutController extends Controller
         $quote = $this->pricing->quote($cart, $numPeople, $data['promo_code'] ?? null, $userId);
 
         try {
-            $order = DB::transaction(function () use ($data, $cart, $quote, $numPeople, $userId) {
-                if ($quote['promo']) {
-                    $this->redeemPromo($quote['promo']);
-                }
-
-                $order = Order::create([
-                    'user_id' => $userId,
-                    'vendor_id' => $cart->vendor_id,
-                    'order_number' => Order::generateOrderNumber(),
-                    'order_type' => 'custom',
-                    'event_type' => $data['event_type'] ?? null,
-                    'event_date' => $data['event_date'],
-                    'event_time' => $data['event_time'],
-                    'delivery_address' => $data['delivery_address'],
-                    'delivery_city' => $data['delivery_city'] ?? null,
-                    'num_people' => $numPeople,
-                    'subtotal' => $quote['subtotal'],
-                    'tax' => $quote['tax'],
-                    'delivery_fee' => $quote['delivery_fee'],
-                    'discount' => $quote['discount'],
-                    'total_amount' => $quote['total'],
-                    'special_request' => $data['special_request'] ?? null,
-                ]);
-
-                foreach ($cart->items as $item) {
-                    $unitPrice = $this->pricing->unitPrice($item);
-                    $quantity = $item->quantity * $numPeople;
-
-                    OrderItem::create([
-                        'order_id' => $order->order_id,
-                        'item_id' => $item->item_id,
-                        'package_id' => $item->package_id,
-                        'item_name' => $item->menuItem?->item_name ?? $item->package?->package_name ?? '',
-                        'quantity' => $quantity,
-                        'unit_price' => $unitPrice,
-                        'subtotal' => $unitPrice * $quantity,
-                        'notes' => $item->notes,
-                    ]);
-                }
-
-                $order->payments()->create([
-                    'payment_method' => $data['payment_method'],
-                    'payment_provider' => $data['payment_provider'],
-                    'amount' => $quote['total'],
-                ]);
-
-                if ($quote['promo']) {
-                    PromoUsage::create([
-                        'promo_id' => $quote['promo']->promo_id,
-                        'user_id' => $userId,
-                        'order_id' => $order->order_id,
-                        'discount_amount' => $quote['discount'],
-                    ]);
-                }
-
-                $cart->items()->delete();
-                $cart->delete();
-
-                return $order;
-            });
-        } catch (ValidationException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
+            $order = DB::transaction(fn () => $this->placeOrder($data, $cart, $quote, $userId));
+        } catch (QueryException $e) {
+            // A database failure is the one error the customer can retry; anything else should surface.
             report($e);
 
             return back()->with('error', 'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi.')->withInput();
         }
 
         return redirect()->route('orders.receipt', $order->order_id)->with('success', 'Pesanan berhasil dibuat!');
+    }
+
+    /** Write the order, its lines, payment and promo usage, then empty the cart. Runs inside a transaction. */
+    private function placeOrder(array $data, Cart $cart, array $quote, int $userId): Order
+    {
+        $numPeople = (int) $data['num_people'];
+
+        if ($quote['promo']) {
+            $this->redeemPromo($quote['promo']);
+        }
+
+        $order = Order::create([
+            'user_id' => $userId,
+            'vendor_id' => $cart->vendor_id,
+            'order_number' => Order::generateOrderNumber(),
+            'order_type' => 'custom',
+            'event_type' => $data['event_type'] ?? null,
+            'event_date' => $data['event_date'],
+            'event_time' => $data['event_time'],
+            'delivery_address' => $data['delivery_address'],
+            'delivery_city' => $data['delivery_city'] ?? null,
+            'num_people' => $numPeople,
+            'subtotal' => $quote['subtotal'],
+            'tax' => $quote['tax'],
+            'delivery_fee' => $quote['delivery_fee'],
+            'discount' => $quote['discount'],
+            'total_amount' => $quote['total'],
+            'special_request' => $data['special_request'] ?? null,
+        ]);
+
+        foreach ($cart->items as $item) {
+            $unitPrice = $this->pricing->unitPrice($item);
+            $quantity = $item->quantity * $numPeople;
+
+            OrderItem::create([
+                'order_id' => $order->order_id,
+                'item_id' => $item->item_id,
+                'package_id' => $item->package_id,
+                'item_name' => $item->menuItem?->item_name ?? $item->package?->package_name ?? '',
+                'quantity' => $quantity,
+                'unit_price' => $unitPrice,
+                'subtotal' => $unitPrice * $quantity,
+                'notes' => $item->notes,
+            ]);
+        }
+
+        $order->payments()->create([
+            'payment_method' => $data['payment_method'],
+            'payment_provider' => $data['payment_provider'],
+            'amount' => $quote['total'],
+        ]);
+
+        if ($quote['promo']) {
+            PromoUsage::create([
+                'promo_id' => $quote['promo']->promo_id,
+                'user_id' => $userId,
+                'order_id' => $order->order_id,
+                'discount_amount' => $quote['discount'],
+            ]);
+        }
+
+        $cart->items()->delete();
+        $cart->delete();
+
+        return $order;
+
     }
 
     /** Refuse to order from a cart that has an unavailable menu item or package. */

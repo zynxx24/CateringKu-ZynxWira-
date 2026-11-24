@@ -2,6 +2,7 @@
 import CateringLayout from '@/layouts/CateringLayout.vue'
 import { getVendorPlaceholder } from '@/lib/ui-media'
 import { Head, Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
 interface Vendor {
     vendor_id: number
@@ -19,24 +20,30 @@ interface Category {
     menu_items_count: number
 }
 
-defineProps<{
+const props = defineProps<{
     vendors: Vendor[]
     categories: Category[]
 }>()
 
-const quickCategories = [
-    { name: 'Prasmanan', icon: '🍽️', type: 'prasmanan' },
-    { name: 'Nasi Kotak', icon: '🍱', type: 'nasi-kotak' },
-    { name: 'Snack Box', icon: '🥪', type: 'snack-box' },
-    { name: 'Tumpeng', icon: '🍚', type: 'tumpeng' },
-    { name: 'Dessert', icon: '🍰', type: 'dessert' },
-    { name: 'Pernikahan', icon: '💒', type: 'wedding' },
-]
+// Pills come from the categories that really have dishes on sale, so none of them leads to an empty search.
+// Food emoji are kept as the category glyph because each one pictures that dish.
+const categoryIcons: Record<string, string> = {
+    prasmanan: '🍽️', 'nasi-kotak': '🍱', 'snack-box': '🥪', tumpeng: '🍚', dessert: '🍰',
+    minuman: '🥤', seafood: '🦐', tradisional: '🍛', 'nasi-lauk': '🍛',
+}
+
+function slugify(name: string) {
+    return name.toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
+const quickCategories = computed(() => props.categories
+    .filter((c) => (c.menu_items_count ?? 0) > 0)
+    .map((c) => ({ name: c.category_name, type: slugify(c.category_name), icon: categoryIcons[slugify(c.category_name)] ?? '🍽️' })))
 
 const features = [
-    { title: 'Vendor Terpercaya', desc: 'Semua vendor telah melalui verifikasi ketat', icon: '🛡️', color: 'from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-900/30' },
-    { title: 'Proses Cepat', desc: 'Pesan dalam hitungan menit, terima tepat waktu', icon: '⚡', color: 'from-blue-100 to-cyan-200 dark:from-blue-900/40 dark:to-cyan-900/30' },
-    { title: 'Pembayaran Mudah', desc: 'Berbagai metode pembayaran tersedia', icon: '💳', color: 'from-purple-100 to-violet-200 dark:from-purple-900/40 dark:to-violet-900/30' },
+    { title: 'Ulasan dari pesanan nyata', desc: 'Rating vendor hanya bisa diberikan pelanggan yang pesanannya sudah selesai.', icon: '⭐', color: 'from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/20' },
+    { title: 'Porsi ikut jumlah tamu', desc: 'Isi jumlah tamu sekali, porsi dan total harga dihitung ulang otomatis.', icon: '👥', color: 'from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/20' },
+    { title: 'Bayar sesuai pilihan', desc: 'Transfer bank, e-wallet, QRIS, atau virtual account; admin memverifikasi pembayarannya.', icon: '💳', color: 'from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/20' },
 ]
 
 function formatRating(r: number) {
@@ -46,7 +53,7 @@ function formatRating(r: number) {
 
 <template>
     <CateringLayout>
-        <Head title="Beranda — Temukan Katering Terbaik" />
+        <Head title="Beranda | CateringKu" />
         <!-- Hero Section -->
         <div class="gradient-hero rounded-3xl p-8 md:p-12 mb-12 text-white relative overflow-hidden shadow-2xl">
             <!-- Background decorations -->
@@ -54,20 +61,20 @@ function formatRating(r: number) {
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-16 -mb-16"></div>
 
             <div class="relative z-10 text-center max-w-3xl mx-auto">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">Temukan Katering Terbaik</h1>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">Cari katering untuk acara Anda</h1>
                 <p class="text-lg text-orange-100 mb-8">
-                    Pesan katering untuk berbagai acara dengan mudah dan cepat. Pilihan beragam dari vendor terpercaya.
+                    Bandingkan menu vendor katering, isi jumlah tamu, dan pesan untuk tanggal acara Anda.
                 </p>
 
                 <form action="/search" method="GET" class="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
                     <div class="flex-grow relative">
-                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <input
-                            type="text" name="q"
+                            type="text" name="q" aria-label="Cari nama vendor atau menu"
                             placeholder="Cari nama vendor atau menu..."
-                            class="w-full pl-12 pr-4 py-4 rounded-xl text-gray-900 dark:text-[var(--ck-text-primary)] dark:bg-[var(--ck-surface)] focus:ring-2 focus:ring-orange-300 focus:outline-none shadow-lg"
+                            class="w-full pl-12 pr-4 py-4 rounded-xl bg-white text-gray-900 placeholder:text-gray-500 dark:text-[var(--ck-text-primary)] dark:bg-[var(--ck-surface)] focus:ring-2 focus:ring-orange-300 focus:outline-none shadow-lg"
                         />
                     </div>
                     <button type="submit" class="bg-white text-ck-primary px-8 py-4 rounded-xl font-semibold hover:bg-orange-50 transition-all shadow-lg">

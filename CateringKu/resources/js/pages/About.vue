@@ -1,52 +1,71 @@
 <script setup lang="ts">
 import CateringLayout from '@/layouts/CateringLayout.vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
+
+const props = defineProps<{
+    stats: { vendors: number, completedOrders: number, cities: number, averageRating: number | null }
+}>()
+
+const formatNumber = (n: number) => new Intl.NumberFormat('id-ID').format(n)
+
+// Counted live from this site's database; a rating only appears once there are reviews.
+const statItems = computed(() => [
+    { value: formatNumber(props.stats.vendors), label: 'vendor aktif' },
+    { value: formatNumber(props.stats.completedOrders), label: 'pesanan selesai' },
+    { value: formatNumber(props.stats.cities), label: 'kota terlayani' },
+    ...(props.stats.averageRating !== null ? [{ value: props.stats.averageRating.toFixed(1), label: 'rata-rata rating' }] : []),
+])
+
+const steps = [
+    { title: 'Pilih vendor', text: 'Cari berdasarkan nama, kota, atau jenis hidangan, lalu buka menu dan ulasannya.' },
+    { title: 'Isi detail acara', text: 'Tanggal, jam, alamat, dan jumlah tamu. Porsi tiap menu dikalikan jumlah tamu.' },
+    { title: 'Bayar dan pantau', text: 'Pilih metode bayar, admin memverifikasi, vendor mengubah status sampai pesanan selesai.' },
+]
 </script>
 
 <template>
     <CateringLayout>
-        <Head title="Tentang Kami — CateringKu" />
-        <!-- Hero -->
-        <div class="gradient-hero rounded-3xl p-8 md:p-12 mb-12 text-white text-center relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-16 -mt-16 animate-float"></div>
-            <div class="relative z-10">
-                <h1 class="text-4xl font-bold mb-3">Tentang CateringKu</h1>
-                <p class="text-orange-100 text-lg max-w-2xl mx-auto">Platform pemesanan katering online terlengkap di Indonesia</p>
+        <Head title="Tentang Kami | CateringKu" />
+
+        <section class="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-start mb-14">
+            <div>
+                <h1 class="text-4xl font-bold text-[var(--ck-text-primary)] mb-4">Tentang CateringKu</h1>
+                <p class="text-lg text-[var(--ck-text-secondary)] leading-relaxed mb-4">
+                    CateringKu mempertemukan orang yang sedang menyiapkan acara dengan vendor katering di kotanya.
+                    Anda bisa membandingkan menu dan harga per porsi, lalu memesan untuk jumlah tamu yang pas.
+                </p>
+                <p class="text-[var(--ck-text-secondary)] leading-relaxed">
+                    Vendor mengelola menu dan pesanannya sendiri dari panel vendor, sementara admin memverifikasi pembayaran.
+                    Rating di setiap vendor berasal dari pelanggan yang pesanannya sudah selesai.
+                </p>
             </div>
-        </div>
 
-        <!-- Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <div v-for="stat in [{n:'500+',l:'Vendor Aktif'},{n:'10.000+',l:'Pesanan Selesai'},{n:'50+',l:'Kota'},{n:'4.8',l:'Rating Rata-rata'}]" :key="stat.l" class="bg-white dark:bg-[#1f2037] rounded-2xl p-6 border border-gray-100 dark:border-[#2a2c45] text-center card-hover">
-                <p class="text-3xl font-bold text-ck-primary mb-1">{{ stat.n }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ stat.l }}</p>
-            </div>
-        </div>
-
-        <!-- Story -->
-        <div class="bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100 dark:border-[#2a2c45] p-8 mb-12">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Cerita Kami</h2>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                CateringKu didirikan dengan visi mempermudah masyarakat Indonesia dalam memesan katering untuk berbagai acara.
-                Kami percaya bahwa setiap momen spesial layak mendapatkan hidangan terbaik tanpa repot.
-            </p>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Dengan platform kami, Anda dapat menemukan vendor katering terpercaya, membandingkan menu dan harga,
-                serta melakukan pemesanan dalam hitungan menit. Kami menghubungkan ribuan pelanggan dengan vendor katering
-                terbaik di seluruh Indonesia.
-            </p>
-        </div>
-
-        <!-- Values -->
-        <div class="mb-12">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Mengapa Memilih Kami?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div v-for="v in [{i:'🤝',t:'Terpercaya',d:'Semua vendor melalui verifikasi ketat dan review dari pelanggan nyata.'},{i:'⚡',t:'Mudah & Cepat',d:'Pesan dalam hitungan menit. Proses simpel dari pencarian hingga pembayaran.'},{i:'💰',t:'Harga Transparan',d:'Tidak ada biaya tersembunyi. Harga yang Anda lihat adalah harga yang Anda bayar.'}]" :key="v.t" class="bg-white dark:bg-[#1f2037] rounded-2xl p-6 border border-gray-100 dark:border-[#2a2c45] text-center card-hover">
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl">{{ v.i }}</div>
-                    <h3 class="font-bold text-gray-800 dark:text-gray-200 mb-2">{{ v.t }}</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm">{{ v.d }}</p>
+            <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[var(--ck-surface-border)] bg-[var(--ck-surface-border)]">
+                <div v-for="stat in statItems" :key="stat.label" class="bg-[var(--ck-surface)] p-6">
+                    <dt class="text-sm text-[var(--ck-text-secondary)]">{{ stat.label }}</dt>
+                    <dd class="text-3xl font-bold text-ck-primary tabular-nums mt-1">{{ stat.value }}</dd>
                 </div>
+            </dl>
+        </section>
+
+        <section class="mb-14">
+            <h2 class="text-2xl font-bold text-[var(--ck-text-primary)] mb-6">Cara memesan</h2>
+            <ol class="grid gap-6 md:grid-cols-3">
+                <li v-for="(step, i) in steps" :key="step.title" class="border-t-2 border-ck-primary pt-4">
+                    <p class="text-sm font-semibold text-ck-primary tabular-nums">Langkah {{ i + 1 }}</p>
+                    <h3 class="font-bold text-[var(--ck-text-primary)] mt-1 mb-2">{{ step.title }}</h3>
+                    <p class="text-sm text-[var(--ck-text-secondary)] leading-relaxed">{{ step.text }}</p>
+                </li>
+            </ol>
+        </section>
+
+        <section class="rounded-2xl bg-[var(--ck-surface)] border border-[var(--ck-surface-border)] p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-[var(--ck-text-primary)]">Punya usaha katering?</h2>
+                <p class="text-[var(--ck-text-secondary)] text-sm mt-1">Kirim pesan dengan subjek "Daftar sebagai Vendor" dan tim kami akan menghubungi Anda.</p>
             </div>
-        </div>
+            <Link href="/contact" class="btn-primary text-center shrink-0">Hubungi kami</Link>
+        </section>
     </CateringLayout>
 </template>

@@ -32,7 +32,7 @@ function addToCart(itemId: number) {
 
 <template>
     <CateringLayout>
-        <Head :title="`${vendor.vendor_name} — CateringKu`" />
+        <Head :title="`${vendor.vendor_name} | CateringKu`" />
         <!-- Banner -->
         <div class="gradient-hero rounded-3xl p-8 md:p-12 mb-8 text-white relative overflow-hidden">
             <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-16 -mt-16"></div>
@@ -40,9 +40,9 @@ function addToCart(itemId: number) {
                 <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ vendor.vendor_name }}</h1>
                 <p class="text-orange-100 max-w-2xl mb-4">{{ vendor.description }}</p>
                 <div class="flex flex-wrap gap-4 text-sm">
-                    <span class="flex items-center gap-1.5 bg-white/20 glass px-3 py-1.5 rounded-full">⭐ {{ Number(vendor.rating).toFixed(1) }} ({{ vendor.total_reviews }} ulasan)</span>
-                    <span class="flex items-center gap-1.5 bg-white/20 glass px-3 py-1.5 rounded-full">📍 {{ vendor.city }}</span>
-                    <span v-if="vendor.phone" class="flex items-center gap-1.5 bg-white/20 glass px-3 py-1.5 rounded-full">📞 {{ vendor.phone }}</span>
+                    <span class="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-full">⭐ {{ Number(vendor.rating).toFixed(1) }} ({{ vendor.total_reviews }} ulasan)</span>
+                    <span class="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-full">📍 {{ vendor.city }}</span>
+                    <span v-if="vendor.phone" class="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-full">📞 {{ vendor.phone }}</span>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@ function addToCart(itemId: number) {
                             <span class="text-lg font-bold text-ck-primary">{{ formatPrice(item.price) }}</span>
                             <span class="text-xs text-[var(--ck-text-muted)] ml-1">/ {{ item.unit }}</span>
                         </div>
-                        <button @click="addToCart(item.item_id)" class="bg-ck-primary hover:bg-ck-primary-dark text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1">
+                        <button type="button" :aria-label="`Tambah ${item.item_name} ke keranjang`" @click="addToCart(item.item_id)" class="bg-ck-primary hover:bg-ck-primary-dark text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                             Keranjang
                         </button>
@@ -96,8 +96,8 @@ function addToCart(itemId: number) {
                             <div class="w-10 h-10 bg-ck-primary/10 text-ck-primary rounded-full flex items-center justify-center font-bold text-sm">{{ review.user?.name?.charAt(0) }}</div>
                             <div>
                                 <p class="font-medium text-[var(--ck-text-primary)] text-sm">{{ review.user?.name }}</p>
-                                <div class="flex gap-0.5 mt-0.5">
-                                    <span v-for="i in 5" :key="i" class="text-sm" :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-200 dark:text-gray-700'">★</span>
+                                <div class="flex gap-0.5 mt-0.5" role="img" :aria-label="`Rating ${review.rating} dari 5`">
+                                    <span v-for="i in 5" :key="i" aria-hidden="true" class="text-sm" :class="i <= review.rating ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400 dark:text-gray-500'">★</span>
                                 </div>
                             </div>
                         </div>

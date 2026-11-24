@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Review;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class VendorController extends Controller
@@ -20,6 +21,15 @@ class VendorController extends Controller
                 $q->where('vendor_name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
             });
+        }
+
+        $activeCategory = null;
+        if ($request->filled('type')) {
+            // `type` is a category slug such as "nasi-kotak"; it narrows vendors to those selling that category.
+            $activeCategory = Category::all()->first(fn ($c) => Str::slug($c->category_name) === $request->type);
+            $activeCategory
+                ? $query->whereHas('menuItems', fn ($q) => $q->available()->where('category_id', $activeCategory->category_id))
+                : $query->whereRaw('1 = 0'); // unknown slug: show the empty state, not every vendor
         }
 
         if ($request->filled('city')) {
@@ -42,6 +52,7 @@ class VendorController extends Controller
             'categories' => $categories,
             'cities' => $cities,
             'filters' => $request->only(['q', 'city', 'sort', 'type']),
+            'activeCategory' => $activeCategory?->category_name,
         ]);
     }
 

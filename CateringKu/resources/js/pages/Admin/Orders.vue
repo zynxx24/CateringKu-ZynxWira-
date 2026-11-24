@@ -46,7 +46,7 @@ onUnmounted(() => {
         <template #header>
             <div class="flex items-center justify-between w-full">
                 <h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">Kelola Pesanan</h1>
-                <span class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                     <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                     Auto-refresh aktif
                 </span>
@@ -95,7 +95,7 @@ onUnmounted(() => {
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <select @change="(e: any) => updateStatus(order.order_id, e.target.value)" :value="order.status" class="text-xs border border-gray-200 dark:border-[#2a2c45] rounded-lg px-3 py-1.5 bg-white dark:bg-[#161729] text-gray-700 dark:text-gray-300 hover:border-ck-primary/40 focus:ring-2 focus:ring-ck-primary/20 focus:border-ck-primary transition-colors cursor-pointer">
+                                        <select :aria-label="`Ubah status pesanan ${order.order_number}`" @change="(e: any) => updateStatus(order.order_id, e.target.value)" :value="order.status" class="text-xs border border-gray-200 dark:border-[#2a2c45] rounded-lg px-3 py-1.5 bg-white dark:bg-[#161729] text-gray-700 dark:text-gray-300 hover:border-ck-primary/40 focus:ring-2 focus:ring-ck-primary/20 focus:border-ck-primary transition-colors cursor-pointer">
                                             <option v-for="s in statuses" :key="s" :value="s">{{ statusLabels[s] }}</option>
                                         </select>
                                         <Link :href="`/admin/orders/${order.order_id}`" class="text-xs text-ck-primary hover:underline font-medium">Detail</Link>
@@ -112,7 +112,7 @@ onUnmounted(() => {
             </div>
 
             <div v-if="orders.links && orders.links.length > 3" class="mt-6 flex justify-center gap-1">
-                <Link v-for="link in orders.links" :key="link.label" :href="link.url || ''" class="px-3 py-2 rounded-lg text-sm transition-colors" :class="link.active ? 'bg-ck-primary text-white shadow-sm' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
+                <Link v-for="link in orders.links" :key="link.label" :href="link.url || ''" :aria-disabled="!link.url" :tabindex="link.url ? undefined : -1" class="px-3 py-2 rounded-lg text-sm transition-colors" :class="link.active ? 'bg-ck-primary text-white shadow-sm' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
             </div>
         </div>
     </AdminLayout>

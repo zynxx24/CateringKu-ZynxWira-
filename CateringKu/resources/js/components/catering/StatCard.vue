@@ -24,7 +24,7 @@ const colorMap: Record<string, { bg: string; icon: string; trend: string }> = {
             <div>
                 <p class="text-sm font-medium text-gray-500 mb-1">{{ title }}</p>
                 <p class="text-3xl font-bold text-gray-900">{{ value }}</p>
-                <p v-if="subtitle" class="text-xs text-gray-400 mt-1">{{ subtitle }}</p>
+                <p v-if="subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ subtitle }}</p>
             </div>
             <div
                 v-if="icon"

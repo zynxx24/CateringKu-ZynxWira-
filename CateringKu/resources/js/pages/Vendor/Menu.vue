@@ -48,7 +48,7 @@ function deleteItem(id: number) {
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ menuItems.length }} item menu terdaftar</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ menuItems.length }} item menu terdaftar</p>
                 </div>
                 <button @click="showAddForm = !showAddForm" :class="showAddForm ? 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300' : 'btn-primary'" class="text-sm !py-2.5 px-5 rounded-xl font-semibold transition-all flex items-center gap-2">
                     <svg v-if="!showAddForm" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -144,16 +144,16 @@ function deleteItem(id: number) {
                                     <div class="w-12 h-12 bg-gradient-to-br from-ck-primary-lighter to-ck-primary-light dark:from-ck-primary/20 dark:to-ck-coral/20 rounded-xl flex items-center justify-center text-xl shrink-0">🍽️</div>
                                     <div>
                                         <h4 class="font-semibold text-gray-800 dark:text-gray-200">{{ item.item_name }}</h4>
-                                        <p class="text-sm text-gray-400 dark:text-gray-500">{{ item.category?.category_name || '-' }} • {{ item.unit }} • Min. {{ item.min_order }}</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.category?.category_name || '-' }} • {{ item.unit }} • Min. {{ item.min_order }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <span class="font-bold text-ck-primary text-sm">{{ formatPrice(item.price) }}</span>
                                     <span class="text-xs px-2.5 py-1 rounded-lg font-semibold" :class="item.is_available ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/30' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-800/30'">{{ item.is_available ? 'Tersedia' : 'Habis' }}</span>
-                                    <button @click="startEdit(item)" class="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors" title="Edit">
+                                    <button @click="startEdit(item)" class="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors" title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </button>
-                                    <button @click="deleteItem(item.item_id)" class="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors" title="Hapus">
+                                    <button @click="deleteItem(item.item_id)" class="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors" title="Hapus">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </button>
                                 </div>

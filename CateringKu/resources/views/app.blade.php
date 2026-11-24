@@ -6,29 +6,29 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         {{-- SEO & Open Graph Meta Tags for WhatsApp, Telegram, Social Sharing --}}
-        <meta name="description" content="{{ $page['props']['meta']['description'] ?? 'CateringKu — Platform pemesanan katering online terpercaya di Indonesia. Temukan vendor katering terbaik untuk segala acara Anda.' }}">
+        <meta name="description" content="{{ $page['props']['meta']['description'] ?? 'CateringKu: bandingkan menu vendor katering dan pesan untuk jumlah tamu acara Anda.' }}">
         <meta name="keywords" content="katering, catering, pesan katering, katering online, nasi kotak, prasmanan, snack box, katering jakarta, katering wedding, tumpeng, dessert, pernikahan, #CateringKu, #KateringOnline, #PesanKatering">
         <meta name="author" content="CateringKu">
         <meta name="robots" content="index, follow">
-        <meta name="theme-color" content="#F5845C">
+        <meta name="theme-color" content="#B8461F">
 
         {{-- Open Graph (Facebook, WhatsApp, Telegram, LINE) --}}
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="{{ $page['props']['meta']['title'] ?? config('app.name') . ' — Pesan Katering Online Terpercaya' }}">
-        <meta property="og:description" content="{{ $page['props']['meta']['description'] ?? 'Platform pemesanan katering online terlengkap di Indonesia. Vendor terpercaya, proses cepat, pembayaran mudah. #CateringKu #KateringOnline' }}">
+        <meta property="og:title" content="{{ $page['props']['meta']['title'] ?? config('app.name') . ' | Pesan katering untuk acara Anda' }}">
+        <meta property="og:description" content="{{ $page['props']['meta']['description'] ?? 'Bandingkan menu vendor katering, isi jumlah tamu, dan pesan untuk tanggal acara Anda.' }}">
         <meta property="og:image" content="{{ asset('images/og-banner.jpg') }}">
-        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:type" content="image/jpeg">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
-        <meta property="og:image:alt" content="CateringKu — Platform Pemesanan Katering Online Terpercaya">
+        <meta property="og:image:alt" content="CateringKu, platform pemesanan katering online">
         <meta property="og:site_name" content="CateringKu">
         <meta property="og:locale" content="id_ID">
 
         {{-- Twitter Card --}}
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="{{ $page['props']['meta']['title'] ?? config('app.name') . ' — Pesan Katering Online' }}">
-        <meta name="twitter:description" content="{{ $page['props']['meta']['description'] ?? 'Temukan vendor katering terbaik untuk segala acara Anda. #CateringKu' }}">
+        <meta name="twitter:title" content="{{ $page['props']['meta']['title'] ?? config('app.name') . ' | Pesan katering online' }}">
+        <meta name="twitter:description" content="{{ $page['props']['meta']['description'] ?? 'Bandingkan menu vendor katering dan pesan untuk acara Anda.' }}">
         <meta name="twitter:image" content="{{ asset('images/og-banner.jpg') }}">
 
         {{-- Inline script to detect system dark mode preference --}}
