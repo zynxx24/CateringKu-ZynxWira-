@@ -18,7 +18,7 @@ function submit() {
             <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -mr-24 -mt-24 animate-float"></div>
             <div class="absolute bottom-0 left-0 w-56 h-56 bg-white/10 rounded-full -ml-20 -mb-20"></div>
             <div class="text-center relative z-10 px-12">
-                <img src="/images/logo.svg" alt="CateringKu" class="w-32 h-32 mx-auto mb-8 rounded-3xl shadow-2xl" />
+                <img src="/images/logo.svg" alt="CateringKu" class="w-32 h-32 mx-auto mb-8 rounded-3xl shadow-2xl bg-white p-3 object-contain" />
                 <h2 class="text-4xl font-bold text-white mb-4">Selamat Datang</h2>
                 <p class="text-orange-100 text-lg leading-relaxed">Masuk untuk mulai memesan katering terbaik untuk acara Anda.</p>
             </div>

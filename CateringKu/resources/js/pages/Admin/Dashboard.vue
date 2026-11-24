@@ -93,7 +93,8 @@ const chartBars = computed(() => {
             const d = new Date(o.created_at)
             return d.getDay() === ((i + 1) % 7)
         })
-        return ordersForDay.reduce((sum: number, o: any) => sum + (o.total_amount || 0), 0)
+        // total_amount arrives as a decimal string ("1832900.00"); coerce it or `+` concatenates text
+        return ordersForDay.reduce((sum: number, o: any) => sum + (Number(o.total_amount) || 0), 0)
     })
     const max = Math.max(...values, 1)
     return days.map((label, i) => ({

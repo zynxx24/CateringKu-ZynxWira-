@@ -17,7 +17,7 @@
         <meta property="og:url" content="{{ url()->current() }}">
         <meta property="og:title" content="{{ $page['props']['meta']['title'] ?? config('app.name') . ' — Pesan Katering Online Terpercaya' }}">
         <meta property="og:description" content="{{ $page['props']['meta']['description'] ?? 'Platform pemesanan katering online terlengkap di Indonesia. Vendor terpercaya, proses cepat, pembayaran mudah. #CateringKu #KateringOnline' }}">
-        <meta property="og:image" content="{{ asset('images/og-banner.png') }}">
+        <meta property="og:image" content="{{ asset('images/og-banner.jpg') }}">
         <meta property="og:image:type" content="image/png">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
@@ -29,7 +29,7 @@
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="{{ $page['props']['meta']['title'] ?? config('app.name') . ' — Pesan Katering Online' }}">
         <meta name="twitter:description" content="{{ $page['props']['meta']['description'] ?? 'Temukan vendor katering terbaik untuk segala acara Anda. #CateringKu' }}">
-        <meta name="twitter:image" content="{{ asset('images/og-banner.png') }}">
+        <meta name="twitter:image" content="{{ asset('images/og-banner.jpg') }}">
 
         {{-- Inline script to detect system dark mode preference --}}
         <script>
