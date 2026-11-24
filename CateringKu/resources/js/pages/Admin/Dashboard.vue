@@ -93,7 +93,8 @@ const chartBars = computed(() => {
             const d = new Date(o.created_at)
             return d.getDay() === ((i + 1) % 7)
         })
-        return ordersForDay.reduce((sum: number, o: any) => sum + (o.total_amount || 0), 0)
+        // total_amount arrives as a decimal string ("1832900.00"); coerce it or `+` concatenates text
+        return ordersForDay.reduce((sum: number, o: any) => sum + (Number(o.total_amount) || 0), 0)
     })
     const max = Math.max(...values, 1)
     return days.map((label, i) => ({
@@ -111,7 +112,7 @@ const chartBars = computed(() => {
         <template #header>
             <div>
                 <h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ greeting }}, Admin! 👋</h1>
-                <p class="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">{{ today }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{{ today }}</p>
             </div>
         </template>
 
@@ -122,7 +123,7 @@ const chartBars = computed(() => {
                      class="group relative bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-5 hover:shadow-xl hover:shadow-gray-100/50 dark:hover:shadow-black/20 hover:-translate-y-1 transition-all duration-300"
                      :style="{ animationDelay: `${index * 100}ms` }">
                     <div class="flex items-start justify-between mb-3">
-                        <div :class="`w-12 h-12 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center text-white text-xl shadow-lg group-hover:scale-110 transition-transform duration-300`">
+                        <div :class="`w-12 h-12 bg-ck-primary-lighter dark:bg-white/5 rounded-2xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300`">
                             {{ card.icon }}
                         </div>
                         <div :class="`w-2 h-2 rounded-full bg-gradient-to-r ${card.gradient} animate-pulse`"></div>
@@ -139,12 +140,12 @@ const chartBars = computed(() => {
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <Link v-for="action in quickActions" :key="action.label" :href="action.href"
                       class="group flex items-center gap-3 bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-4 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-black/20 hover:-translate-y-0.5 transition-all duration-200">
-                    <div :class="`w-10 h-10 bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center text-white text-lg shadow-sm group-hover:scale-110 transition-transform`">
+                    <div :class="`w-10 h-10 bg-ck-primary-lighter dark:bg-white/5 rounded-xl flex items-center justify-center text-lg group-hover:scale-110 transition-transform`">
                         {{ action.icon }}
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{{ action.label }}</p>
-                        <p v-if="action.count !== null" class="text-xs text-gray-400">{{ action.count }} item</p>
+                        <p v-if="action.count !== null" class="text-xs text-gray-500 dark:text-gray-400">{{ action.count }} item</p>
                     </div>
                     <svg v-if="action.count && action.count > 0" class="w-4 h-4 text-gray-300 group-hover:text-ck-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </Link>
@@ -155,11 +156,11 @@ const chartBars = computed(() => {
                 <div class="lg:col-span-2 bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-6">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Pendapatan Minggu Ini</h3>
-                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">Overview harian berdasarkan pesanan terbaru</p>
+                            <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Nilai pesanan per hari</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">10 pesanan terakhir, dikelompokkan menurut hari</p>
                         </div>
                         <div class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold border border-emerald-100">
-                            {{ formatPrice(stats.totalRevenue) }}
+                            Total lunas {{ formatPrice(stats.totalRevenue) }}
                         </div>
                     </div>
                     <div class="flex items-end justify-between gap-3 h-44 px-2">
@@ -174,7 +175,7 @@ const chartBars = computed(() => {
                                 :style="{ height: `${bar.height}%` }">
                                 </div>
                             </div>
-                            <span :class="['text-xs font-semibold', bar.isToday ? 'text-ck-primary' : 'text-gray-400']">{{ bar.label }}</span>
+                            <span :class="['text-xs font-semibold', bar.isToday ? 'text-ck-primary' : 'text-gray-500 dark:text-gray-400']">{{ bar.label }}</span>
                         </div>
                     </div>
                 </div>
@@ -184,10 +185,10 @@ const chartBars = computed(() => {
                     <!-- Pending Alert -->
                     <div v-if="stats.pendingOrders > 0" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/15 border border-amber-200/60 dark:border-amber-800/30 rounded-2xl p-5">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-lg shadow-sm">⏳</div>
+                            <div class="w-10 h-10 bg-ck-primary-lighter dark:bg-white/5 rounded-xl flex items-center justify-center text-lg">⏳</div>
                             <div>
                                 <p class="font-bold text-amber-900 dark:text-amber-300 text-sm">{{ stats.pendingOrders }} Pesanan Menunggu</p>
-                                <p class="text-xs text-amber-600 dark:text-amber-500">Perlu dikonfirmasi segera</p>
+                                <p class="text-xs text-amber-700 dark:text-amber-400">Perlu dikonfirmasi segera</p>
                             </div>
                         </div>
                         <Link href="/admin/orders?status=pending" class="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 text-xs font-bold transition-colors">
@@ -198,10 +199,10 @@ const chartBars = computed(() => {
                     <!-- Payment Alert -->
                     <div v-if="pendingPayments.length > 0" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/15 border border-blue-200/60 dark:border-blue-800/30 rounded-2xl p-5">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white text-lg shadow-sm">💳</div>
+                            <div class="w-10 h-10 bg-ck-primary-lighter dark:bg-white/5 rounded-xl flex items-center justify-center text-lg">💳</div>
                             <div>
                                 <p class="font-bold text-blue-900 dark:text-blue-300 text-sm">{{ pendingPayments.length }} Pembayaran Pending</p>
-                                <p class="text-xs text-blue-600 dark:text-blue-500">Perlu verifikasi</p>
+                                <p class="text-xs text-blue-700 dark:text-blue-400">Perlu verifikasi</p>
                             </div>
                         </div>
                     </div>
@@ -222,7 +223,7 @@ const chartBars = computed(() => {
                                 </div>
                                 <div class="flex-1 min-w-0 -mt-0.5">
                                     <p class="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">{{ order.user?.name }}</p>
-                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">{{ formatTime(order.created_at) }} · {{ formatPrice(order.total_amount) }}</p>
+                                    <p class="text-[11px] text-gray-500 dark:text-gray-400">{{ formatTime(order.created_at) }} · {{ formatPrice(order.total_amount) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -235,7 +236,7 @@ const chartBars = computed(() => {
                 <div class="px-6 py-5 border-b border-gray-100/80 dark:border-[#2a2c45] flex justify-between items-center">
                     <div>
                         <h3 class="font-bold text-gray-900 dark:text-gray-100 text-lg">Pesanan Terbaru</h3>
-                        <p class="text-sm text-gray-400 mt-0.5">10 pesanan terakhir yang masuk</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">10 pesanan terakhir yang masuk</p>
                     </div>
                     <Link href="/admin/orders" class="text-sm text-ck-primary hover:text-ck-primary-dark font-semibold flex items-center gap-1 px-4 py-2 rounded-xl hover:bg-ck-primary/5 transition-colors">
                         Lihat Semua
@@ -268,7 +269,7 @@ const chartBars = computed(() => {
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-gray-600 dark:text-gray-400">{{ order.vendor?.vendor_name }}</td>
-                                <td class="px-6 py-4 text-gray-400 dark:text-gray-500 text-xs">{{ formatDate(order.created_at) }}</td>
+                                <td class="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{{ formatDate(order.created_at) }}</td>
                                 <td class="px-6 py-4 font-bold text-gray-800 dark:text-gray-200">{{ formatPrice(order.total_amount) }}</td>
                                 <td class="px-6 py-4">
                                     <span :class="statusColors[order.status]" class="px-2.5 py-1 rounded-lg text-xs font-bold">

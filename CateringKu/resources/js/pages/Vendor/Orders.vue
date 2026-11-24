@@ -44,7 +44,7 @@ onUnmounted(() => {
         <template #header>
             <div class="flex items-center justify-between w-full">
                 <h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">Kelola Pesanan</h1>
-                <span class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                     <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                     Auto-refresh aktif
                 </span>
@@ -55,11 +55,11 @@ onUnmounted(() => {
             <!-- Summary cards -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                 <div class="bg-white dark:bg-[#1f2037] rounded-xl border border-gray-100 dark:border-[#2a2c45] p-4">
-                    <p class="text-xs text-gray-400 dark:text-gray-500 font-medium">Total</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Total</p>
                     <p class="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mt-1">{{ orders.data.length }}</p>
                 </div>
                 <div class="bg-white dark:bg-[#1f2037] rounded-xl border border-amber-100 dark:border-amber-900/30 p-4">
-                    <p class="text-xs text-amber-600 dark:text-amber-400 font-medium">Menunggu</p>
+                    <p class="text-xs text-amber-700 dark:text-amber-400 font-medium">Menunggu</p>
                     <p class="text-2xl font-extrabold text-amber-700 dark:text-amber-400 mt-1">{{ orders.data.filter(o => o.status === 'pending').length }}</p>
                 </div>
                 <div class="bg-white dark:bg-[#1f2037] rounded-xl border border-blue-100 dark:border-blue-900/30 p-4">
@@ -67,7 +67,7 @@ onUnmounted(() => {
                     <p class="text-2xl font-extrabold text-blue-700 dark:text-blue-400 mt-1">{{ orders.data.filter(o => ['confirmed','preparing','delivering'].includes(o.status)).length }}</p>
                 </div>
                 <div class="bg-white dark:bg-[#1f2037] rounded-xl border border-emerald-100 dark:border-emerald-900/30 p-4">
-                    <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Selesai</p>
+                    <p class="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Selesai</p>
                     <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-1">{{ orders.data.filter(o => o.status === 'completed').length }}</p>
                 </div>
             </div>
@@ -101,7 +101,7 @@ onUnmounted(() => {
                                         </div>
                                         <div>
                                             <span class="font-medium text-gray-800 dark:text-gray-200 block">{{ order.user?.name }}</span>
-                                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ order.user?.phone }}</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ order.user?.phone }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -113,7 +113,7 @@ onUnmounted(() => {
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <select v-if="order.status !== 'cancelled' && order.status !== 'completed'" @change="(e: any) => updateStatus(order.order_id, e.target.value)" :value="order.status" class="text-xs border border-gray-200 dark:border-[#2a2c45] rounded-lg px-3 py-1.5 bg-white dark:bg-[#161729] text-gray-700 dark:text-gray-300 hover:border-ck-primary/40 focus:ring-2 focus:ring-ck-primary/20 focus:border-ck-primary transition-colors cursor-pointer">
+                                        <select v-if="order.status !== 'cancelled' && order.status !== 'completed'" :aria-label="`Ubah status pesanan ${order.order_number}`" @change="(e: any) => updateStatus(order.order_id, e.target.value)" :value="order.status" class="text-xs border border-gray-200 dark:border-[#2a2c45] rounded-lg px-3 py-1.5 bg-white dark:bg-[#161729] text-gray-700 dark:text-gray-300 hover:border-ck-primary/40 focus:ring-2 focus:ring-ck-primary/20 focus:border-ck-primary transition-colors cursor-pointer">
                                             <option v-for="s in vendorStatuses" :key="s" :value="s">{{ statusLabels[s] }}</option>
                                         </select>
                                         <Link :href="`/vendor-panel/orders/${order.order_id}`" class="text-xs text-ck-primary hover:underline font-medium">Detail</Link>
@@ -131,7 +131,7 @@ onUnmounted(() => {
 
             <!-- Pagination -->
             <div v-if="orders.links && orders.links.length > 3" class="mt-6 flex justify-center gap-1">
-                <Link v-for="link in orders.links" :key="link.label" :href="link.url || ''" class="px-3 py-2 rounded-lg text-sm" :class="link.active ? 'bg-ck-primary text-white' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
+                <Link v-for="link in orders.links" :key="link.label" :href="link.url || ''" :aria-disabled="!link.url" :tabindex="link.url ? undefined : -1" class="px-3 py-2 rounded-lg text-sm" :class="link.active ? 'bg-ck-primary text-white' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
             </div>
         </div>
     </VendorLayout>

@@ -44,7 +44,7 @@ class AdminController extends Controller
     public function orders(Request $request)
     {
         $orders = Order::with(['user:id,name', 'vendor'])
-            ->when($request->status, fn($q, $s) => $q->where('status', $s))
+            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->orderByDesc('created_at')
             ->paginate(15);
 
@@ -76,6 +76,8 @@ class AdminController extends Controller
     public function verifyPayment(Request $request, int $paymentId)
     {
         $payment = Payment::findOrFail($paymentId);
+        abort_unless($payment->payment_status === 'pending', 409, 'Pembayaran ini sudah diproses.');
+
         $payment->update([
             'payment_status' => 'verified',
             'verified_by' => $request->user()->id,
@@ -96,6 +98,7 @@ class AdminController extends Controller
     public function messages()
     {
         $messages = ContactMessage::orderByDesc('created_at')->paginate(20);
+
         return Inertia::render('Admin/Messages', ['messages' => $messages]);
     }
 
@@ -103,6 +106,7 @@ class AdminController extends Controller
     {
         $message = ContactMessage::findOrFail($id);
         $message->update(['is_read' => true]);
+
         return Inertia::render('Admin/MessageDetail', ['message' => $message]);
     }
 }

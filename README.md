@@ -1,262 +1,302 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/zynxx24/tes/main/CateringKu/resources/img/Logo%20(500%20x%20500%20px).svg" alt="CateringKu Logo" width="120" />
+<img src="docs/banner.jpg" alt="CateringKu, platform pemesanan katering online" width="100%" />
 
-# CateringKu
+<br/>
+<br/>
 
-**Platform katering online berbasis web — menghubungkan pelanggan dengan vendor katering terpercaya.**
+**Pesan katering untuk acara apa pun, dari memilih vendor sampai struk, dalam satu platform.**
+Tiga peran (Pelanggan, Vendor, Admin), kode promo, ulasan, dan pembayaran multi-provider.
 
 <br/>
 
-[![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net)
-[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4.x-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![CI](https://img.shields.io/github/actions/workflow/status/zynxx24/CateringKu-ZynxWira-/laravel.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white)](https://github.com/zynxx24/CateringKu-ZynxWira-/actions/workflows/laravel.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/zynxx24/CateringKu-ZynxWira-?style=for-the-badge)](https://github.com/zynxx24/CateringKu-ZynxWira-/commits/main)
 
-<br/>
-
-[![Tests](https://img.shields.io/badge/Tests-40%20passed%20%E2%9C%85-brightgreen?style=flat-square)](https://github.com/zynxx24/tes/actions)
-[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white)](https://github.com/zynxx24/tes/actions)
-[![SQLite](https://img.shields.io/badge/DB-SQLite%20%2F%20MySQL-003B57?style=flat-square&logo=sqlite&logoColor=white)]()
+[![PHP](https://img.shields.io/badge/PHP-8.3%20%7C%208.4-777BB4?style=flat-square&logo=php&logoColor=white)](https://www.php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![Vue](https://img.shields.io/badge/Vue-3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org)
+[![Inertia](https://img.shields.io/badge/Inertia.js-3-9553E9?style=flat-square)](https://inertiajs.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Pest](https://img.shields.io/badge/tested%20with-Pest%204-F28D1A?style=flat-square)](https://pestphp.com)
 
 </div>
 
 ---
 
-## 📋 Daftar Isi
+## Daftar Isi
 
-- [Tentang Proyek](#-tentang-proyek)
-- [Tech Stack](#-tech-stack)
+- [Tampilan](#-tampilan)
 - [Fitur](#-fitur)
-- [Prasyarat](#-prasyarat)
-- [Instalasi & Setup](#-instalasi--setup)
-- [Perintah Tersedia](#-perintah-tersedia)
-- [Menjalankan Tes](#-menjalankan-tes)
-- [Akun Test](#-akun-test)
+- [Mulai Cepat](#-mulai-cepat)
+- [Perintah](#-perintah)
+- [Akun Demo](#-akun-demo)
+- [Arsitektur](#-arsitektur)
+- [Desain & Aksesibilitas](#-desain--aksesibilitas)
+- [Keamanan](#-keamanan)
+- [Testing & CI](#-testing--ci)
 - [Struktur Proyek](#-struktur-proyek)
-- [CI/CD](#-cicd)
+- [Kontribusi](#-kontribusi)
+- [Lisensi](#-lisensi)
 
 ---
 
-## 🍽️ Tentang Proyek
+## 📸 Tampilan
 
-**CateringKu** adalah aplikasi web full-stack untuk memesan layanan katering secara online. Platform ini memiliki tiga peran pengguna: **Admin**, **Vendor**, dan **Customer**, dengan fitur manajemen menu, pemesanan, promo, ulasan, dan pembayaran.
+Semua gambar di bawah adalah **tangkapan layar aplikasi yang berjalan** (data dari seeder demo).
 
----
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/01-beranda.webp" alt="Beranda"/><br/><sub><b>Beranda</b>: pencarian vendor dan kategori</sub></td>
+    <td width="50%"><img src="docs/screenshots/02-cari-vendor.webp" alt="Cari vendor"/><br/><sub><b>Cari vendor</b>: filter kota, urut rating/terbaru/nama</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/03-detail-vendor.webp" alt="Detail vendor"/><br/><sub><b>Detail vendor</b>: menu, paket, dan ulasan</sub></td>
+    <td><img src="docs/screenshots/08-checkout.webp" alt="Checkout"/><br/><sub><b>Checkout</b>: kode promo, pembayaran multi-provider</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/07-keranjang.webp" alt="Keranjang"/><br/><sub><b>Keranjang</b>: satu keranjang per vendor</sub></td>
+    <td><img src="docs/screenshots/09-pesanan-saya.webp" alt="Pesanan saya"/><br/><sub><b>Pesanan saya</b>: status, struk, ulasan</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/10-dashboard-admin.webp" alt="Dashboard admin"/><br/><sub><b>Dashboard admin</b>: statistik, pembayaran tertunda</sub></td>
+    <td><img src="docs/screenshots/12-dashboard-vendor.webp" alt="Dashboard vendor"/><br/><sub><b>Dashboard vendor</b>: pesanan, pendapatan, rating</sub></td>
+  </tr>
+</table>
 
-## 🛠️ Tech Stack
+<details>
+<summary><b>Lihat semua halaman</b> (login, kontak, tentang, admin, menu vendor)</summary>
+<br/>
 
-| Layer | Teknologi |
+| | |
 |---|---|
-| **Backend** | Laravel 13, PHP 8.3+ |
-| **Frontend** | Vue 3, Inertia.js, TypeScript |
-| **Styling** | Tailwind CSS 4 |
-| **Build Tool** | Vite 8 |
-| **Database** | SQLite (dev) / MySQL (prod) |
-| **Auth** | Laravel Fortify (2FA support) |
-| **Testing** | Pest PHP 4 |
-| **Queue** | Laravel Queue |
-| **Linting** | ESLint, Prettier, Laravel Pint |
+| ![Login](docs/screenshots/06-login.webp) | ![Tentang](docs/screenshots/04-tentang.webp) |
+| ![Kontak](docs/screenshots/05-kontak.webp) | ![Admin pesanan](docs/screenshots/11-admin-pesanan.webp) |
+| ![Menu vendor](docs/screenshots/13-vendor-menu.webp) | |
+
+</details>
+
+<details>
+<summary><b>Desain awal (mockup)</b>: sebelum diimplementasikan</summary>
+<br/>
+
+| | |
+|---|---|
+| ![](docs/design/beranda.webp) | ![](docs/design/login.webp) |
+| ![](docs/design/keranjang.webp) | ![](docs/design/data-pemesanan.webp) |
+| ![](docs/design/admin-dashboard.webp) | ![](docs/design/vendor-crud-menu.webp) |
+
+</details>
 
 ---
 
 ## ✨ Fitur
 
-- 🛡️ **Autentikasi lengkap** — Login, register, verifikasi email, reset password, 2FA
-- 🏪 **Manajemen Vendor** — CRUD menu, kategori, paket katering
-- 🛒 **Keranjang & Pemesanan** — Tambah ke cart, checkout, kelola order
-- 🎫 **Promo & Diskon** — Kode promo dengan validasi (persentase & nominal)
-- ⭐ **Ulasan** — Rating dan review per order yang selesai
-- 💳 **Pembayaran** — Rekap pembayaran per order
-- 📬 **Pesan Kontak** — Form kontak untuk calon pelanggan
-- 📊 **Dashboard Admin** — Pantau seluruh aktivitas platform
+| Peran | Yang bisa dilakukan |
+|---|---|
+| 👤 **Pelanggan** | Cari vendor & menu, keranjang per vendor, checkout dengan tanggal/jam/alamat acara, kode promo, pilih pembayaran (Transfer Bank, E-Wallet, QRIS, Virtual Account), lihat struk, batalkan pesanan *pending*, beri ulasan setelah pesanan selesai |
+| 🏪 **Vendor** | Dashboard pendapatan & rating, kelola pesanan (konfirmasi → persiapan → pengiriman → selesai), CRUD menu, balas ulasan |
+| 🛡️ **Admin** | Statistik platform, semua pesanan, **verifikasi pembayaran**, kotak pesan kontak |
+
+Lainnya: autentikasi lengkap dengan **2FA** (Laravel Fortify), mode gelap, UI responsif, harga dihitung ulang **di server** (lihat [Keamanan](#-keamanan)).
 
 ---
 
-## ⚙️ Prasyarat
+## 🚀 Mulai Cepat
 
-Pastikan sudah terinstal:
-
-- **PHP** `>= 8.3` dengan ekstensi: `pdo`, `pdo_sqlite`, `mbstring`, `zip`, `bcmath`, `curl`
-- **Composer** `>= 2.x`
-- **Node.js** `>= 18.x` & **NPM**
-
-> 💡 **Windows**: PHP 8.3 portabel tersedia di folder `php83/` di root repo ini. Tambahkan ke PATH atau gunakan `run.bat`.
-
----
-
-## 🚀 Instalasi & Setup
-
-### 1. Clone Repository
+**Prasyarat:** PHP 8.3+ (`pdo_sqlite`, `mbstring`, `zip`, `bcmath`, `curl`), Composer 2, Node.js 20+ (CI memakai 24).
+> Windows: PHP 8.3 portabel sudah ada di folder `php83/`; `run.bat` memakainya otomatis.
 
 ```bash
-git clone https://github.com/your-username/cateringku.git
-cd cateringku
+git clone https://github.com/zynxx24/CateringKu-ZynxWira-.git
+cd CateringKu-ZynxWira-
+
+bash run.sh setup      # Windows: .\run.bat setup
+bash run.sh dev        # Windows: .\run.bat dev
 ```
 
-### 2. Setup Otomatis (Direkomendasikan)
+`setup` memasang dependensi, membuat `.env` dari `.env.example`, membuat `APP_KEY`, migrasi, dan mengisi data demo.
+Buka **http://localhost:8000**.
 
-Perintah ini akan otomatis menginstall dependency, membuat `.env`, generate `APP_KEY`, menjalankan migrasi, dan seed data test.
+**Kontak & media sosial** di footer dan halaman Kontak diambil dari `.env`. Selama kosong, bagian itu disembunyikan, jadi situs tidak pernah menampilkan nomor telepon karangan atau ikon sosial yang mengarah ke `#`.
 
-**Windows:**
-```bat
-.\run.bat setup
+```dotenv
+CATERINGKU_CONTACT_EMAIL=halo@domainanda.id
+CATERINGKU_CONTACT_PHONE="0812-xxxx-xxxx"
+CATERINGKU_CONTACT_ADDRESS="Jl. ..., Kota"
+CATERINGKU_CONTACT_HOURS="Senin sampai Sabtu, 08.00 sampai 17.00"
+CATERINGKU_INSTAGRAM_URL=https://instagram.com/akunanda
+CATERINGKU_WHATSAPP_URL=https://wa.me/62812xxxxxxx
 ```
 
-**Linux / macOS:**
+<details>
+<summary>Tanpa script (manual)</summary>
+
 ```bash
-bash run.sh setup
+cd CateringKu
+composer install
+cp .env.example .env && php artisan key:generate
+touch database/database.sqlite
+php artisan migrate --seed --seeder=FullTestSeeder
+npm install && npm run build      # atau: composer dev  (server + queue + vite)
+php artisan serve
 ```
-
-### 3. Jalankan Dev Server
-
-**Windows:**
-```bat
-.\run.bat dev
-```
-
-**Linux / macOS:**
-```bash
-bash run.sh dev
-```
-
-Akses di browser: **http://localhost:8000**
+</details>
 
 ---
 
-## 📜 Perintah Tersedia
+## 📜 Perintah
 
-Semua perintah dijalankan dari root repo (bukan dari folder `CateringKu`):
+Jalankan dari root repo.
 
-| Perintah | Windows | Linux/macOS | Keterangan |
-|---|---|---|---|
-| Setup awal | `run.bat setup` | `bash run.sh setup` | Install + migrate + seed |
-| Dev server | `run.bat dev` | `bash run.sh dev` | PHP + Vite sekaligus |
-| Install dependency | `run.bat install` | `bash run.sh install` | Composer + NPM |
-| Migrasi | `run.bat migrate` | `bash run.sh migrate` | Jalankan migration |
-| Seed data | `run.bat seed` | `bash run.sh seed` | Isi data test |
-| Fresh database | `run.bat fresh` | `bash run.sh fresh` | ⚠️ Hapus semua data |
-| Build produksi | `run.bat build` | `bash run.sh build` | Build frontend assets |
-| Clear cache | `run.bat clear` | `bash run.sh clear` | Hapus semua cache |
-| Jalankan tes | `run.bat test` | `bash run.sh test` | Test suite (Pest) |
-| Hentikan server | `run.bat stop` | `bash run.sh stop` | Kill PHP & Vite |
-
----
-
-## 🧪 Menjalankan Tes
-
-```bash
-# Dari dalam folder CateringKu
-php artisan test
-```
-
-Atau via script:
-```bat
-run.bat test
-```
-
-**Hasil:** `40 tests passed (137 assertions)` ✅
-
-Test mencakup:
-- Unit tests
-- Feature: Auth (login, register, 2FA, email verification, password reset)
-- Feature: Dashboard
-- Feature: Settings (profile update, password, security)
-
----
-
-## 🔑 Akun Test
-
-> Jalankan seeder terlebih dahulu: `run.bat seed`
-
-### 🛡️ Admin
-
-| Email | Password | Akses |
+| Tujuan | Linux/macOS | Windows |
 |---|---|---|
-| admin@cateringku.com | admin123 | `/admin` |
+| Setup awal | `bash run.sh setup` | `run.bat setup` |
+| Dev server (PHP + Vite) | `bash run.sh dev` | `run.bat dev` |
+| Migrasi / seed | `bash run.sh migrate` / `seed` | `run.bat migrate` / `seed` |
+| Reset database ⚠️ | `bash run.sh fresh` | `run.bat fresh` |
+| Build produksi | `bash run.sh build` | `run.bat build` |
+| Jalankan tes | `bash run.sh test` | `run.bat test` |
+| Bersihkan cache | `bash run.sh clear` | `run.bat clear` |
+| Hentikan server | `bash run.sh stop` | `run.bat stop` |
 
-### 🏪 Vendor — password: `vendor123`
+Di dalam `CateringKu/`: `composer lint` (Pint), `npm run types:check`, `npm run build`.
 
-| Nama | Email | Kota |
+---
+
+## 🔑 Akun Demo
+
+Dibuat oleh `FullTestSeeder`. Detail lengkap ada di [`CateringKu/test-accounts.md`](CateringKu/test-accounts.md).
+
+| Peran | Email | Password |
 |---|---|---|
-| Dapur Nusantara | nusantara@cateringku.com | Jakarta |
-| Sari Rasa Katering | sarirasa@cateringku.com | Bandung |
-| Berkah Jaya Catering | berkah@cateringku.com | Surabaya |
-| Royal Feast Catering | royal@cateringku.com | Jakarta |
-| Padang Bundo Catering | padang@cateringku.com | Medan |
+| Admin | `admin@cateringku.com` | `admin123` |
+| Vendor | `nusantara@cateringku.com` (juga `sarirasa@`, `berkah@`, `royal@`, `padang@`) | `vendor123` |
+| Pelanggan | `ahmad_fauzi@gmail.com` (15 akun) | `user123` |
 
-### 👤 Customer — password: `user123`
+Kode promo untuk dicoba: `WELCOME10` (10%, min. Rp 100.000), `HEMAT20K` (Rp 20.000, min. Rp 200.000), `NUSANTARA15`, `ROYAL25`, `PADANG10`, `WEEKEND30`.
 
-Contoh: `ahmad_fauzi@gmail.com`, `siti_nur@gmail.com`, `budi_s@gmail.com`, dll. *(15 akun tersedia)*
+> ⚠️ Akun-akun ini hanya untuk pengembangan. Jangan seed di produksi.
 
-### 🎫 Kode Promo
+---
 
-| Kode | Diskon | Min. Order |
-|---|---|---|
-| `WELCOME10` | 10% | Rp 100.000 |
-| `HEMAT20K` | Rp 20.000 | Rp 200.000 |
-| `NUSANTARA15` | 15% | — |
-| `ROYAL25` | 25% | — |
-| `PADANG10` | 10% | — |
-| `WEEKEND30` | Rp 30.000 | Rp 250.000 |
+## 🧱 Arsitektur
 
-> ⚠️ Jangan gunakan akun ini di environment production!
+```mermaid
+flowchart LR
+    B[Browser<br/>Vue 3 + Inertia] -->|halaman & form| R[Routes + Middleware<br/>auth · verified · role · throttle]
+    R --> C[Controllers]
+    C --> S[OrderPricing<br/>harga, diskon, PPN]
+    C --> M[(Eloquent Models<br/>SQLite / MySQL)]
+    S --> M
+```
+
+```mermaid
+erDiagram
+    USERS ||--o| VENDORS : "memiliki"
+    USERS ||--o{ ORDERS : "memesan"
+    USERS ||--o{ CART : "punya"
+    VENDORS ||--o{ MENU_ITEMS : "menjual"
+    VENDORS ||--o{ PACKAGES : "menawarkan"
+    VENDORS ||--o{ ORDERS : "menerima"
+    CATEGORIES ||--o{ MENU_ITEMS : "mengelompokkan"
+    CART ||--o{ CART_ITEMS : "berisi"
+    ORDERS ||--|{ ORDER_ITEMS : "terdiri dari"
+    ORDERS ||--o{ PAYMENTS : "dibayar via"
+    ORDERS ||--o| REVIEWS : "diulas"
+    PROMOS ||--o{ PROMO_USAGE : "dipakai"
+    ORDERS ||--o| PROMO_USAGE : "memakai"
+```
+
+**Alur harga:** keranjang menyimpan *jumlah per tamu*; saat checkout jumlah dikali `num_people`.
+`subtotal − diskon promo → PPN 11% → + ongkir Rp 15.000 = total`. Semua dihitung di `app/Services/OrderPricing.php`, dipakai bersama oleh pratinjau promo dan checkout.
+
+---
+
+## 🎨 Desain & Aksesibilitas
+
+Arah desain mengikuti mockup awal di [`docs/design/`](docs/design): oranye CateringKu, Poppins untuk judul, dan kartu vendor yang hangat. UI diaudit dengan gerbang **antislop** (tanpa klaim palsu, angka tanpa sumber, link mati, atau em dash) dan **WCAG 2.1 AA**:
+
+| Keputusan | Alasan |
+|---|---|
+| Oranye brand untuk teks dan tombol digelapkan ke karat `#B8461F` | Putih di atas `#F5845C` hanya 2.5:1; `#B8461F` memberi 5.3:1 tanpa keluar dari keluarga warna mockup |
+| `#F5845C` tetap dipakai untuk teks di mode gelap | 6.5:1 di atas latar gelap |
+| Statistik di halaman Tentang dihitung langsung dari database | Tidak ada angka marketing tanpa sumber |
+| Placeholder vendor berupa monogram inisial | Tidak menulis klaim apa pun atas nama vendor |
+| Petak ikon dashboard memakai satu tint brand | Sebelumnya tiap kartu punya gradien pelangi berbeda |
+
+Diperiksa dengan browser otomatis di 22 halaman × mode terang/gelap × lebar 1440 px dan 360 px: tidak ada overflow horizontal, tidak ada error console, semua teks lolos kontras AA (kecuali tautan pagination nonaktif, yang dikecualikan WCAG). Semua kontrol punya nama aksesibel, semua field punya label, dan fokus keyboard selalu terlihat. Animasi berhenti saat `prefers-reduced-motion` aktif.
+
+---
+
+## 🔒 Keamanan
+
+- **Harga tidak pernah dipercaya dari browser.** Subtotal, diskon, pajak, dan total dihitung ulang dari database saat checkout.
+- **Promo**: validasi di server (masa berlaku, vendor, minimal order, satu kali per pelanggan), penghitung `used_count` atomik sehingga batas pemakaian tidak bisa dilampaui checkout paralel.
+- **Keranjang**: item harus milik vendor yang sama dan masih tersedia; jumlah dibatasi.
+- **Otorisasi**: pelanggan hanya melihat pesanannya, vendor hanya pesanan & menunya sendiri (diuji di `AccessControlTest`).
+- Registrasi selalu membuat peran `customer`; kolom peran tidak bisa dikirim dari form.
+- **Header keamanan** (CSP tanpa `unsafe-eval` di luar mode lokal, `X-Frame-Options`, HSTS di produksi, dll.) dan **rate limit** pada kontak, promo, dan checkout.
+- Proxy tepercaya hanya aktif jika `TRUSTED_PROXIES` diisi. `.env` tidak pernah di-commit.
+
+Menemukan celah? Buka [issue](https://github.com/zynxx24/CateringKu-ZynxWira-/issues) atau hubungi pemilik repo secara langsung untuk hal sensitif.
+
+---
+
+## 🧪 Testing & CI
+
+```bash
+cd CateringKu && php artisan test
+```
+
+**72 tes** (Pest): autentikasi, 2FA, pengaturan akun, keranjang, checkout, promo, kontrol akses antar-peran, filter kategori, statistik halaman Tentang, dan kontak dari konfigurasi.
+
+GitHub Actions ([`laravel.yml`](.github/workflows/laravel.yml)) menjalankan di setiap push/PR ke `main`:
+
+| Job | Isi |
+|---|---|
+| **Pest** | PHP 8.3 dan 8.4, build aset Vite, `php artisan test` |
+| **Style, types, audit** | `pint --test`, `vue-tsc`, `composer audit` + `npm audit` (informasional) |
 
 ---
 
 ## 📁 Struktur Proyek
 
 ```
-/
-├── CateringKu/              # Aplikasi Laravel utama
+.
+├── CateringKu/                  # aplikasi Laravel
 │   ├── app/
-│   │   ├── Actions/         # Business logic actions
-│   │   ├── Http/            # Controllers, Middleware, Requests
-│   │   ├── Models/          # Eloquent models (User, Vendor, Order, dll)
-│   │   └── Providers/       # Service providers
-│   ├── database/
-│   │   ├── migrations/      # Database migrations
-│   │   ├── seeders/         # Database seeders
-│   │   └── database.sqlite  # SQLite dev database
-│   ├── resources/
-│   │   └── js/              # Vue 3 + TypeScript frontend
-│   ├── routes/              # Route definitions
-│   ├── tests/               # Pest test suite
-│   ├── run.bat              # Windows launcher script
-│   └── run.sh               # Linux/macOS launcher script
-├── php83/                   # PHP 8.3 portable (Windows)
-├── run.bat                  # Entry point Windows
-├── run.sh                   # Entry point Linux/macOS
-└── README.md
+│   │   ├── Http/Controllers/    # Home, Vendor, Cart, Checkout, Order, Admin, VendorDashboard…
+│   │   ├── Http/Middleware/     # SecurityHeaders, EnsureUserIsAdmin/Vendor, ShareCartCount
+│   │   ├── Models/              # Order, Vendor, MenuItem, Promo, Payment, …
+│   │   ├── Services/            # OrderPricing  ← sumber tunggal perhitungan harga
+│   │   └── Support/             # PaymentOptions (metode & provider yang diterima)
+│   ├── database/                # migrasi, seeder demo
+│   ├── resources/js/            # Vue 3 + TypeScript (pages, layouts, components)
+│   ├── routes/                  # web.php, settings.php
+│   └── tests/                   # Pest (Feature + Unit)
+├── docs/                        # banner, screenshot, mockup desain
+├── php83/                       # PHP 8.3 portabel untuk Windows
+├── run.sh · run.bat             # pintu masuk setup/dev/test
+└── .github/workflows/           # CI
 ```
 
 ---
 
-## 🔄 CI/CD
+## 🤝 Kontribusi
 
-GitHub Actions otomatis menjalankan test suite di setiap push/PR ke branch `main`.
-
-**Workflow:** `.github/workflows/laravel.yml`
-
-| Step | Detail |
-|---|---|
-| PHP | 8.4 via `shivammathur/setup-php` |
-| Node.js | 20 via `actions/setup-node` |
-| Database | SQLite (in-memory) |
-| Test runner | `php artisan test` (Pest) |
+1. Fork, lalu buat branch: `git checkout -b fitur/nama-fitur`
+2. Pastikan lolos sebelum commit: `composer lint` · `php artisan test` · `npm run types:check`
+3. Buka Pull Request ke `main`; CI akan berjalan otomatis.
 
 ---
 
 ## 📄 Lisensi
 
-Proyek ini menggunakan lisensi [MIT](LICENSE).
+[MIT](LICENSE) © 2026 Wira & Team Zynx
 
 <div align="center">
-
-<br/>
-
-Made By Wira n Team Zynx
-
+<sub>Dibuat oleh <b>Wira</b> dan <b>Team Zynx</b> 🍽️</sub>
 </div>

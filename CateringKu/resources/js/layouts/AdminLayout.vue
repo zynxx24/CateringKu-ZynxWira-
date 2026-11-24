@@ -2,8 +2,16 @@
 import { Link, usePage } from '@inertiajs/vue3'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import DarkModeToggle from '@/components/DarkModeToggle.vue'
+import FlashMessage from '@/components/catering/FlashMessage.vue'
+import { router } from '@inertiajs/vue3'
 
 const page = usePage()
+
+// Feedback for every action in the panel (status changes, menu edits, payment checks).
+// The key changes on each finished visit so the same message twice still shows again.
+const flash = computed(() => (page.props as any).flash ?? {})
+const flashKey = ref(0)
+router.on('finish', () => { flashKey.value++ })
 const user = computed(() => (page.props as any).auth?.user)
 const stats = computed(() => (page.props as any).stats || {})
 
@@ -70,7 +78,7 @@ function toggleSidebar() {
             <!-- Logo Section -->
             <div class="flex items-center h-16 px-4 border-b border-white/[0.06]">
                 <Link href="/admin" class="flex items-center gap-3 group min-w-0">
-                    <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-red-500/20 shrink-0 group-hover:scale-105 transition-transform">
+                    <div class="w-9 h-9 bg-gradient-to-br from-red-700 to-rose-800 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-red-500/20 shrink-0 group-hover:scale-105 transition-transform">
                         CK
                     </div>
                     <Transition
@@ -83,12 +91,12 @@ function toggleSidebar() {
                     >
                         <div v-if="!sidebarCollapsed" class="min-w-0 hidden lg:block">
                             <span class="text-white font-bold text-base tracking-tight block">CateringKu</span>
-                            <span class="text-[10px] text-red-300/50 font-medium uppercase tracking-widest">Admin Panel</span>
+                            <span class="text-[10px] text-red-200 font-medium uppercase tracking-widest">Admin Panel</span>
                         </div>
                     </Transition>
                     <div class="min-w-0 lg:hidden">
                         <span class="text-white font-bold text-base tracking-tight block">CateringKu</span>
-                        <span class="text-[10px] text-red-300/50 font-medium uppercase tracking-widest">Admin Panel</span>
+                        <span class="text-[10px] text-red-200 font-medium uppercase tracking-widest">Admin Panel</span>
                     </div>
                 </Link>
             </div>
@@ -111,7 +119,7 @@ function toggleSidebar() {
                     <div v-if="isActive(item)" class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-gradient-to-b from-red-400 to-rose-500 rounded-r-full"></div>
 
                     <!-- Icons -->
-                    <div :class="['w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200', isActive(item) ? 'bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-md shadow-red-500/30' : 'bg-white/[0.06] text-white/60 group-hover:bg-white/[0.1] group-hover:text-white/80']">
+                    <div :class="['w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200', isActive(item) ? 'bg-gradient-to-br from-red-700 to-rose-800 text-white shadow-md shadow-red-500/30' : 'bg-white/[0.06] text-white/60 group-hover:bg-white/[0.1] group-hover:text-white/80']">
                         <svg v-if="item.icon === 'dashboard'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                         <svg v-else-if="item.icon === 'orders'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                         <svg v-else-if="item.icon === 'messages'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -121,15 +129,15 @@ function toggleSidebar() {
                     <span class="lg:hidden truncate flex-1">{{ item.name }}</span>
 
                     <!-- Badge -->
-                    <span v-if="item.badge && item.badge() > 0 && (!sidebarCollapsed || !true)" class="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-md min-w-[20px] text-center">
+                    <span v-if="item.badge && item.badge() > 0 && (!sidebarCollapsed || !true)" class="px-1.5 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded-md min-w-[20px] text-center">
                         {{ item.badge() }}
                     </span>
                 </Link>
 
                 <div class="!my-4 border-t border-white/[0.06]"></div>
 
-                <Link href="/" @click="closeMobileMenu" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/40 hover:text-white/70 hover:bg-white/[0.04] transition-all duration-200">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-white/[0.04] text-white/40 group-hover:text-white/60">
+                <Link href="/" @click="closeMobileMenu" class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/65 hover:text-white/70 hover:bg-white/[0.04] transition-all duration-200">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-white/[0.04] text-white/65 group-hover:text-white/60">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
                     </div>
                     <span v-if="!sidebarCollapsed" class="hidden lg:inline">Lihat Website</span>
@@ -140,18 +148,18 @@ function toggleSidebar() {
             <!-- User Section -->
             <div class="border-t border-white/[0.06] p-3">
                 <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04]">
-                    <div class="w-9 h-9 bg-gradient-to-br from-red-500/80 to-rose-600/80 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    <div class="w-9 h-9 bg-gradient-to-br from-red-700 to-rose-800 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0">
                         {{ user?.name?.charAt(0)?.toUpperCase() || 'A' }}
                     </div>
                     <div v-if="!sidebarCollapsed" class="min-w-0 flex-1 hidden lg:block">
                         <p class="text-sm font-medium text-white/80 truncate">{{ user?.name }}</p>
-                        <p class="text-[11px] text-white/30 truncate">Administrator</p>
+                        <p class="text-[11px] text-white/60 truncate">Administrator</p>
                     </div>
                     <div class="min-w-0 flex-1 lg:hidden">
                         <p class="text-sm font-medium text-white/80 truncate">{{ user?.name }}</p>
-                        <p class="text-[11px] text-white/30 truncate">Administrator</p>
+                        <p class="text-[11px] text-white/60 truncate">Administrator</p>
                     </div>
-                    <Link href="/logout" method="post" as="button" class="shrink-0 p-1.5 text-white/30 hover:text-red-400 rounded-lg hover:bg-white/[0.06] transition-all" title="Keluar">
+                    <Link href="/logout" method="post" as="button" class="shrink-0 p-1.5 text-white/60 hover:text-red-400 rounded-lg hover:bg-white/[0.06] transition-all" title="Keluar">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     </Link>
                 </div>
@@ -162,14 +170,14 @@ function toggleSidebar() {
         <div class="flex-1 flex flex-col min-w-0">
             <!-- Top bar -->
             <header class="sticky top-0 z-30 bg-white/80 dark:bg-[#1a1b2e]/80 backdrop-blur-xl border-b border-gray-100/80 dark:border-[#2a2c45] h-16 flex items-center px-4 sm:px-6 lg:px-8 gap-4">
-                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors">
+                <button type="button" :aria-expanded="mobileMenuOpen" aria-label="Buka menu samping" @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden w-11 h-11 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
 
-                <button @click="toggleSidebar" class="hidden lg:flex p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors">
+                <button type="button" aria-label="Ciutkan atau lebarkan sidebar" @click="toggleSidebar" class="hidden lg:flex p-2 text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h8m-8 6h16"/>
                     </svg>
@@ -190,6 +198,10 @@ function toggleSidebar() {
 
             <!-- Page content -->
             <main class="flex-1 p-4 sm:p-6 lg:p-8">
+                <div v-if="flash.success || flash.error" :key="flashKey" class="mb-6 space-y-2">
+                    <FlashMessage v-if="flash.success" type="success" :message="flash.success" />
+                    <FlashMessage v-if="flash.error" type="error" :message="flash.error" :auto-dismiss="false" />
+                </div>
                 <slot />
             </main>
         </div>

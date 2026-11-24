@@ -51,7 +51,7 @@ function printReceipt() {
     <AdminLayout>
         <template #header>
             <div class="flex items-center gap-3">
-                <Link href="/admin/orders" class="text-gray-400 dark:text-gray-500 hover:text-ck-primary transition-colors">
+                <Link href="/admin/orders" class="text-gray-500 dark:text-gray-400 hover:text-ck-primary transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                 </Link>
                 <h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">Detail Pesanan</h1>
@@ -64,7 +64,7 @@ function printReceipt() {
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <span class="font-mono text-xs px-2 py-1 bg-gray-50 dark:bg-white/5 rounded-md text-gray-500 dark:text-gray-400">{{ order.order_number }}</span>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">Dibuat: {{ formatDateTime(order.created_at) }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Dibuat: {{ formatDateTime(order.created_at) }}</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <span :class="statusColors[order.status]" class="px-3 py-1.5 rounded-lg text-xs font-bold">{{ statusLabels[order.status] }}</span>
@@ -80,13 +80,13 @@ function printReceipt() {
                     <!-- Customer & Vendor -->
                     <div class="grid grid-cols-2 gap-6">
                         <div class="bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100 dark:border-[#2a2c45] p-5 shadow-sm">
-                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Pelanggan</h3>
+                            <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Pelanggan</h3>
                             <p class="font-semibold text-gray-800 dark:text-gray-200">{{ order.user?.name }}</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">{{ order.user?.email }}</p>
                             <p v-if="order.user?.phone" class="text-sm text-gray-500 dark:text-gray-400">{{ order.user?.phone }}</p>
                         </div>
                         <div class="bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100 dark:border-[#2a2c45] p-5 shadow-sm">
-                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Vendor</h3>
+                            <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Vendor</h3>
                             <p class="font-semibold text-gray-800 dark:text-gray-200">{{ order.vendor?.vendor_name }}</p>
                             <p v-if="order.vendor?.phone" class="text-sm text-gray-500 dark:text-gray-400">{{ order.vendor?.phone }}</p>
                             <p v-if="order.vendor?.city" class="text-sm text-gray-500 dark:text-gray-400">{{ order.vendor?.city }}</p>
@@ -100,12 +100,12 @@ function printReceipt() {
                             Detail Acara
                         </h3>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                            <div><span class="text-gray-400 dark:text-gray-500 text-xs">Tipe Acara</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.event_type || '-' }}</p></div>
-                            <div><span class="text-gray-400 dark:text-gray-500 text-xs">Tanggal</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ formatDate(order.event_date) }}</p></div>
-                            <div><span class="text-gray-400 dark:text-gray-500 text-xs">Waktu</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.event_time }}</p></div>
-                            <div><span class="text-gray-400 dark:text-gray-500 text-xs">Jumlah Tamu</span><p class="font-medium text-ck-primary font-bold">{{ order.num_people }} orang</p></div>
-                            <div class="col-span-2 sm:col-span-4"><span class="text-gray-400 dark:text-gray-500 text-xs">Alamat Pengiriman</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.delivery_address }}{{ order.delivery_city ? ', ' + order.delivery_city : '' }}</p></div>
-                            <div v-if="order.special_request" class="col-span-2 sm:col-span-4"><span class="text-gray-400 dark:text-gray-500 text-xs">Catatan Khusus</span><p class="font-medium text-gray-800 dark:text-gray-200 italic">{{ order.special_request }}</p></div>
+                            <div><span class="text-gray-500 dark:text-gray-400 text-xs">Tipe Acara</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.event_type || '-' }}</p></div>
+                            <div><span class="text-gray-500 dark:text-gray-400 text-xs">Tanggal</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ formatDate(order.event_date) }}</p></div>
+                            <div><span class="text-gray-500 dark:text-gray-400 text-xs">Waktu</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.event_time }}</p></div>
+                            <div><span class="text-gray-500 dark:text-gray-400 text-xs">Jumlah Tamu</span><p class="font-medium text-ck-primary font-bold">{{ order.num_people }} orang</p></div>
+                            <div class="col-span-2 sm:col-span-4"><span class="text-gray-500 dark:text-gray-400 text-xs">Alamat Pengiriman</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.delivery_address }}{{ order.delivery_city ? ', ' + order.delivery_city : '' }}</p></div>
+                            <div v-if="order.special_request" class="col-span-2 sm:col-span-4"><span class="text-gray-500 dark:text-gray-400 text-xs">Catatan Khusus</span><p class="font-medium text-gray-800 dark:text-gray-200 italic">{{ order.special_request }}</p></div>
                         </div>
                     </div>
 
@@ -126,7 +126,7 @@ function printReceipt() {
                             </thead>
                             <tbody class="divide-y divide-gray-50 dark:divide-[#2a2c45]">
                                 <tr v-for="item in order.items" :key="item.order_item_id">
-                                    <td class="py-3"><p class="font-medium text-gray-800 dark:text-gray-200">{{ item.item_name }}</p><p v-if="item.notes" class="text-xs text-gray-400 dark:text-gray-500">{{ item.notes }}</p></td>
+                                    <td class="py-3"><p class="font-medium text-gray-800 dark:text-gray-200">{{ item.item_name }}</p><p v-if="item.notes" class="text-xs text-gray-500 dark:text-gray-400">{{ item.notes }}</p></td>
                                     <td class="py-3 text-center font-mono text-gray-700 dark:text-gray-300">{{ item.quantity }}x</td>
                                     <td class="py-3 text-right text-gray-600 dark:text-gray-400">{{ formatPrice(item.unit_price) }}</td>
                                     <td class="py-3 text-right font-semibold text-gray-800 dark:text-gray-200">{{ formatPrice(item.subtotal) }}</td>
@@ -155,12 +155,12 @@ function printReceipt() {
                     <div class="bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100 dark:border-[#2a2c45] p-6 shadow-sm">
                         <h3 class="font-bold text-gray-800 dark:text-gray-200 mb-4 text-sm">Info Pembayaran</h3>
                         <div class="space-y-3 text-sm">
-                            <div><span class="text-gray-400 dark:text-gray-500 text-xs">Metode</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ paymentMethodLabels[payment?.payment_method] || payment?.payment_method || '-' }}</p></div>
-                            <div><span class="text-gray-400 dark:text-gray-500 text-xs">Provider</span><p class="font-medium text-gray-800 dark:text-gray-200 uppercase">{{ payment?.payment_provider?.replace('_', ' ') || '-' }}</p></div>
+                            <div><span class="text-gray-500 dark:text-gray-400 text-xs">Metode</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ paymentMethodLabels[payment?.payment_method] || payment?.payment_method || '-' }}</p></div>
+                            <div><span class="text-gray-500 dark:text-gray-400 text-xs">Provider</span><p class="font-medium text-gray-800 dark:text-gray-200 uppercase">{{ payment?.payment_provider?.replace('_', ' ') || '-' }}</p></div>
                             <div>
-                                <span class="text-gray-400 dark:text-gray-500 text-xs">Status Bayar</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Status Bayar</span>
                                 <p>
-                                    <span v-if="payment" class="inline-block px-2 py-0.5 rounded-full text-xs font-bold" :class="payment.payment_status === 'verified' ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' : payment.payment_status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-700/30 text-gray-600 dark:text-gray-400'">
+                                    <span v-if="payment" class="inline-block px-2 py-0.5 rounded-full text-xs font-bold" :class="payment.payment_status === 'verified' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400' : payment.payment_status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-700/30 text-gray-600 dark:text-gray-400'">
                                         {{ payment.payment_status === 'pending' ? 'Menunggu' : payment.payment_status === 'verified' ? 'Terverifikasi' : payment.payment_status }}
                                     </span>
                                 </p>

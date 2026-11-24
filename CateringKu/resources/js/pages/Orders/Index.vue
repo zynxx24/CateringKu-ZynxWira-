@@ -12,7 +12,7 @@ const statusColors: Record<string, string> = {
     confirmed: 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400',
     preparing: 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400',
     delivering: 'bg-indigo-100 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400',
-    completed: 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400',
+    completed: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400',
     cancelled: 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400',
 }
 const statusLabels: Record<string, string> = {
@@ -23,7 +23,7 @@ const statusLabels: Record<string, string> = {
 
 <template>
     <CateringLayout>
-        <Head title="Pesanan Saya — CateringKu" />
+        <Head title="Pesanan Saya | CateringKu" />
         <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8">📦 Pesanan Saya</h1>
 
         <div v-if="orders.data.length === 0" class="text-center py-20 bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100 dark:border-[#2a2c45]">
@@ -41,7 +41,7 @@ const statusLabels: Record<string, string> = {
             >
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                        <p class="text-sm text-gray-400 dark:text-gray-500 mb-1">{{ order.order_number }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">{{ order.order_number }}</p>
                         <h3 class="font-bold text-gray-800 dark:text-gray-200">{{ order.vendor?.vendor_name }}</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(order.event_date) }}</p>
                     </div>
@@ -55,7 +55,7 @@ const statusLabels: Record<string, string> = {
 
         <!-- Pagination -->
         <div v-if="orders.links && orders.links.length > 3" class="mt-8 flex justify-center gap-1">
-            <Link v-for="link in orders.links" :key="link.label" :href="link.url || ''" class="px-3 py-2 rounded-lg text-sm" :class="link.active ? 'bg-ck-primary text-white' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
+            <Link v-for="link in orders.links" :key="link.label" :href="link.url || ''" :aria-disabled="!link.url" :tabindex="link.url ? undefined : -1" class="px-3 py-2 rounded-lg text-sm" :class="link.active ? 'bg-ck-primary text-white' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
         </div>
     </CateringLayout>
 </template>

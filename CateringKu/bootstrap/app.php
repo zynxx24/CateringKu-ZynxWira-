@@ -24,25 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        // ── Security Hardening ──────────────────────────────────
-
-        // Prevent CSRF token mismatches
-        $middleware->validateCsrfTokens(except: [
-            // Add any webhook endpoints here
-        ]);
-
-        // Rate limiting — stricter for auth, normal for API
-        $middleware->throttleApi('60,1');
-
-        // Trust proxies (for load balancers / reverse proxies)
-        $middleware->trustProxies(at: '*');
-
-        // Force HTTPS in production
-        if (env('APP_ENV') === 'production') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+        // Only trust forwarded headers from proxies you list in TRUSTED_PROXIES
+        // (comma separated IPs/CIDRs, or "*" when the app sits behind a single trusted proxy/tunnel).
+        if ($proxies = env('TRUSTED_PROXIES')) {
+            $middleware->trustProxies(at: $proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
         }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-

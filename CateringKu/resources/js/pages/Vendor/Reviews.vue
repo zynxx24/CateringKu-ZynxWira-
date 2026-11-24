@@ -28,10 +28,10 @@ function submitResponse(reviewId: number) {
             <div class="bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-6 mb-6 flex items-center gap-6">
                 <div class="text-center">
                     <div class="text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ Number(vendorRating).toFixed(1) }}</div>
-                    <div class="flex gap-0.5 mt-1 justify-center">
-                        <span v-for="i in 5" :key="i" class="text-lg" :class="i <= Math.round(Number(vendorRating)) ? 'text-yellow-400' : 'text-gray-200 dark:text-gray-600'">★</span>
+                    <div class="flex gap-0.5 mt-1 justify-center" role="img" :aria-label="`Rating ${Number(vendorRating).toFixed(1)} dari 5`">
+                        <span v-for="i in 5" :key="i" aria-hidden="true" class="text-lg" :class="i <= Math.round(Number(vendorRating)) ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400 dark:text-gray-500'">★</span>
                     </div>
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ reviews.data.length }} ulasan</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ reviews.data.length }} ulasan</p>
                 </div>
                 <div class="h-12 w-px bg-gray-100 dark:bg-[#2a2c45]"></div>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Rating rata-rata dari seluruh ulasan pelanggan Anda. Tanggapi ulasan untuk meningkatkan kepuasan pelanggan.</p>
@@ -41,11 +41,11 @@ function submitResponse(reviewId: number) {
                 <div v-for="review in reviews.data" :key="review.review_id" class="bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100/80 dark:border-[#2a2c45] p-6 hover:shadow-sm transition-shadow">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-ck-primary/20 to-ck-coral/20 text-ck-primary rounded-xl flex items-center justify-center font-bold text-sm">{{ review.user?.name?.charAt(0) }}</div>
+                            <div class="w-10 h-10 bg-ck-primary-lighter text-ck-primary dark:bg-ck-primary/20 rounded-xl flex items-center justify-center font-bold text-sm">{{ review.user?.name?.charAt(0) }}</div>
                             <div>
                                 <p class="font-semibold text-gray-800 dark:text-gray-200">{{ review.user?.name }}</p>
-                                <div class="flex gap-0.5">
-                                    <span v-for="i in 5" :key="i" class="text-sm" :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-200 dark:text-gray-600'">★</span>
+                                <div class="flex gap-0.5" role="img" :aria-label="`Rating ${review.rating} dari 5`">
+                                    <span v-for="i in 5" :key="i" aria-hidden="true" class="text-sm" :class="i <= review.rating ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400 dark:text-gray-500'">★</span>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +87,7 @@ function submitResponse(reviewId: number) {
 
             <!-- Pagination -->
             <div v-if="reviews.links && reviews.links.length > 3" class="mt-6 flex justify-center gap-1">
-                <Link v-for="link in reviews.links" :key="link.label" :href="link.url || ''" class="px-3 py-2 rounded-lg text-sm" :class="link.active ? 'bg-ck-primary text-white' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
+                <Link v-for="link in reviews.links" :key="link.label" :href="link.url || ''" :aria-disabled="!link.url" :tabindex="link.url ? undefined : -1" class="px-3 py-2 rounded-lg text-sm" :class="link.active ? 'bg-ck-primary text-white' : link.url ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5' : 'text-gray-300 dark:text-gray-600'" v-html="link.label" />
             </div>
         </div>
     </VendorLayout>

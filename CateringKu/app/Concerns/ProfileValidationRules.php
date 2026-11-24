@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Concerns;
+
 use App\Models\User;
 use Illuminate\Validation\Rule;
 

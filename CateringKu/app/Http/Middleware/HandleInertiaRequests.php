@@ -53,9 +53,13 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'site' => [
+                'contact' => array_filter(config('cateringku.contact')),
+                'social' => config('cateringku.social'),
+            ],
             'meta' => [
-                'title' => config('app.name') . ' — Pesan Katering Online Terpercaya',
-                'description' => 'Platform pemesanan katering online terlengkap di Indonesia. Vendor terpercaya, proses cepat, pembayaran mudah.',
+                'title' => config('app.name').' | Pesan katering untuk acara Anda',
+                'description' => 'Bandingkan menu dan harga vendor katering, pesan untuk jumlah tamu Anda, lalu pantau status pesanan sampai selesai.',
                 'url' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

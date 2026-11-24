@@ -1,0 +1,17 @@
+# Secrets & local config — never commit these
+.env
+.env.*
+!.env.example
+
+# Local binaries (install PHP/Composer normally, or place them next to the repo)
+composer.phar
+php83.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+.codex

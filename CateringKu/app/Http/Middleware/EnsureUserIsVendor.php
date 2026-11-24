@@ -12,6 +12,7 @@ class EnsureUserIsVendor
         if (! $request->user() || ! $request->user()->isVendor()) {
             abort(403, 'Akses ditolak.');
         }
+
         return $next($request);
     }
 }

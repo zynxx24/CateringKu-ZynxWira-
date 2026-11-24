@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OrderItem extends Model
 {
     protected $primaryKey = 'order_item_id';
+
     public $timestamps = false;
 
     protected $fillable = [

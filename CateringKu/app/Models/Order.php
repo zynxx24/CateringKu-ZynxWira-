@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -46,7 +47,7 @@ class Order extends Model
         return $this->hasMany(Payment::class, 'order_id', 'order_id');
     }
 
-    public function review(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function review(): HasOne
     {
         return $this->hasOne(Review::class, 'order_id', 'order_id');
     }
@@ -54,7 +55,13 @@ class Order extends Model
     public static function generateOrderNumber(): string
     {
         $year = date('Y');
-        $count = self::whereYear('created_at', $year)->count() + 1;
-        return 'ORD-' . $year . '-' . str_pad($count, 6, '0', STR_PAD_LEFT);
+        $sequence = self::whereYear('created_at', $year)->count();
+
+        do {
+            $sequence++;
+            $number = 'ORD-'.$year.'-'.str_pad((string) $sequence, 6, '0', STR_PAD_LEFT);
+        } while (self::where('order_number', $number)->exists());
+
+        return $number;
     }
 }

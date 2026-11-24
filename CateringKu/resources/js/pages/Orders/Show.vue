@@ -13,7 +13,7 @@ const statusColors: Record<string, string> = {
     confirmed: 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400',
     preparing: 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400',
     delivering: 'bg-indigo-100 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400',
-    completed: 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400',
+    completed: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400',
     cancelled: 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400',
 }
 const statusLabels: Record<string, string> = {
@@ -51,7 +51,7 @@ function printReceipt() {
 
 <template>
     <CateringLayout>
-        <Head :title="`Pesanan ${order.order_number} — CateringKu`" />
+        <Head :title="`Pesanan ${order.order_number} | CateringKu`" />
         <Link href="/orders" class="text-sm text-gray-500 dark:text-gray-400 hover:text-ck-primary mb-4 inline-flex items-center gap-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
             Kembali ke Pesanan
@@ -63,16 +63,16 @@ function printReceipt() {
                 <div class="bg-white dark:bg-[#1f2037] rounded-2xl border border-gray-100 dark:border-[#2a2c45] p-6">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <p class="text-sm text-gray-400 dark:text-gray-500">{{ order.order_number }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ order.order_number }}</p>
                             <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ order.vendor?.vendor_name }}</h1>
                         </div>
                         <span :class="statusColors[order.status]" class="px-4 py-1.5 rounded-full text-sm font-bold">{{ statusLabels[order.status] }}</span>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                        <div><span class="text-gray-400 dark:text-gray-500">Tanggal Acara</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ formatDate(order.event_date) }}</p></div>
-                        <div><span class="text-gray-400 dark:text-gray-500">Waktu</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.event_time }}</p></div>
-                        <div><span class="text-gray-400 dark:text-gray-500">Jumlah Tamu</span><p class="font-medium text-ck-primary font-bold">{{ order.num_people }} orang</p></div>
-                        <div class="col-span-2 md:col-span-3"><span class="text-gray-400 dark:text-gray-500">Alamat Pengiriman</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.delivery_address }}</p></div>
+                        <div><span class="text-gray-500 dark:text-gray-400">Tanggal Acara</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ formatDate(order.event_date) }}</p></div>
+                        <div><span class="text-gray-500 dark:text-gray-400">Waktu</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.event_time }}</p></div>
+                        <div><span class="text-gray-500 dark:text-gray-400">Jumlah Tamu</span><p class="font-medium text-ck-primary font-bold">{{ order.num_people }} orang</p></div>
+                        <div class="col-span-2 md:col-span-3"><span class="text-gray-500 dark:text-gray-400">Alamat Pengiriman</span><p class="font-medium text-gray-800 dark:text-gray-200">{{ order.delivery_address }}</p></div>
                     </div>
                 </div>
 
@@ -83,7 +83,7 @@ function printReceipt() {
                         <div v-for="item in order.items" :key="item.order_item_id" class="py-3 flex justify-between items-center">
                             <div>
                                 <p class="font-medium text-gray-800 dark:text-gray-200">{{ item.item_name }}</p>
-                                <p class="text-sm text-gray-400 dark:text-gray-500">{{ item.quantity }}x @ {{ formatPrice(item.unit_price) }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.quantity }}x @ {{ formatPrice(item.unit_price) }}</p>
                             </div>
                             <p class="font-semibold text-gray-800 dark:text-gray-200">{{ formatPrice(item.subtotal) }}</p>
                         </div>
@@ -151,7 +151,7 @@ function printReceipt() {
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-gray-500 dark:text-gray-400">Status</span>
-                            <span class="px-2 py-0.5 rounded-full text-xs font-bold" :class="payment.payment_status === 'verified' ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' : payment.payment_status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-700/30 text-gray-600 dark:text-gray-400'">
+                            <span class="px-2 py-0.5 rounded-full text-xs font-bold" :class="payment.payment_status === 'verified' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400' : payment.payment_status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-700/30 text-gray-600 dark:text-gray-400'">
                                 {{ payment.payment_status === 'pending' ? 'Menunggu' : payment.payment_status === 'verified' ? 'Terverifikasi' : payment.payment_status }}
                             </span>
                         </div>

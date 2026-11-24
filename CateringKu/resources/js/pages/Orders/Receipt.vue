@@ -51,7 +51,7 @@ function printReceipt() {
 </script>
 
 <template>
-    <Head :title="`Nota #${order.order_number} — CateringKu`" />
+    <Head :title="`Nota #${order.order_number} | CateringKu`" />
 
     <!-- Print-optimized layout: no app layout wrapper -->
     <div class="min-h-screen bg-gray-50 print:bg-white">
@@ -83,7 +83,7 @@ function printReceipt() {
                     <div class="flex justify-between items-start">
                         <div>
                             <h1 class="text-2xl font-bold print:text-black">🍽️ CateringKu</h1>
-                            <p class="text-white/80 print:text-gray-600 text-sm mt-1">Platform Catering Terpercaya</p>
+                            <p class="text-white/80 print:text-gray-600 text-sm mt-1">Struk pesanan katering</p>
                         </div>
                         <div class="text-right">
                             <p class="text-xs text-white/70 print:text-gray-500 uppercase tracking-wider font-semibold">Nota Digital</p>
@@ -98,13 +98,13 @@ function printReceipt() {
                     <!-- Customer & Vendor Info -->
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Pelanggan</h3>
+                            <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Pelanggan</h3>
                             <p class="font-semibold text-gray-800">{{ order.user?.name }}</p>
                             <p class="text-sm text-gray-500">{{ order.user?.email }}</p>
                             <p v-if="order.user?.phone" class="text-sm text-gray-500">{{ order.user?.phone }}</p>
                         </div>
                         <div>
-                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Vendor</h3>
+                            <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Vendor</h3>
                             <p class="font-semibold text-gray-800">{{ order.vendor?.vendor_name }}</p>
                             <p v-if="order.vendor?.phone" class="text-sm text-gray-500">{{ order.vendor?.phone }}</p>
                             <p v-if="order.vendor?.city" class="text-sm text-gray-500">{{ order.vendor?.city }}</p>
@@ -113,38 +113,38 @@ function printReceipt() {
 
                     <!-- Event Details -->
                     <div class="bg-gray-50 print:bg-transparent print:border print:border-gray-300 rounded-xl p-4">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Detail Acara</h3>
+                        <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Detail Acara</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                             <div>
-                                <span class="text-gray-400 text-xs">Tipe Acara</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Tipe Acara</span>
                                 <p class="font-medium text-gray-800">{{ order.event_type || '-' }}</p>
                             </div>
                             <div>
-                                <span class="text-gray-400 text-xs">Tanggal</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Tanggal</span>
                                 <p class="font-medium text-gray-800">{{ formatDate(order.event_date) }}</p>
                             </div>
                             <div>
-                                <span class="text-gray-400 text-xs">Waktu</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Waktu</span>
                                 <p class="font-medium text-gray-800">{{ order.event_time }}</p>
                             </div>
                             <div>
-                                <span class="text-gray-400 text-xs">Jumlah Tamu</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Jumlah Tamu</span>
                                 <p class="font-medium text-gray-800">{{ order.num_people }} orang</p>
                             </div>
                         </div>
                         <div class="mt-3 text-sm">
-                            <span class="text-gray-400 text-xs">Alamat Pengiriman</span>
+                            <span class="text-gray-500 dark:text-gray-400 text-xs">Alamat Pengiriman</span>
                             <p class="font-medium text-gray-800">{{ order.delivery_address }}</p>
                         </div>
                         <div v-if="order.special_request" class="mt-3 text-sm">
-                            <span class="text-gray-400 text-xs">Catatan Khusus</span>
+                            <span class="text-gray-500 dark:text-gray-400 text-xs">Catatan Khusus</span>
                             <p class="font-medium text-gray-800">{{ order.special_request }}</p>
                         </div>
                     </div>
 
                     <!-- Order Items Table -->
                     <div>
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Rincian Pesanan</h3>
+                        <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Rincian Pesanan</h3>
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="border-b-2 border-gray-200">
@@ -158,7 +158,7 @@ function printReceipt() {
                                 <tr v-for="item in order.items" :key="item.order_item_id" class="group">
                                     <td class="py-3 pr-3">
                                         <p class="font-medium text-gray-800">{{ item.item_name }}</p>
-                                        <p v-if="item.notes" class="text-xs text-gray-400 mt-0.5">{{ item.notes }}</p>
+                                        <p v-if="item.notes" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ item.notes }}</p>
                                     </td>
                                     <td class="py-3 text-center font-mono text-gray-700">{{ item.quantity }}x</td>
                                     <td class="py-3 text-right text-gray-600">{{ formatPrice(item.unit_price) }}</td>
@@ -196,22 +196,22 @@ function printReceipt() {
 
                     <!-- Payment Info -->
                     <div class="bg-gray-50 print:bg-transparent print:border print:border-gray-300 rounded-xl p-4">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Informasi Pembayaran</h3>
+                        <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Informasi Pembayaran</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                             <div>
-                                <span class="text-gray-400 text-xs">Metode</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Metode</span>
                                 <p class="font-medium text-gray-800">{{ paymentMethodLabel[payment?.payment_method] || payment?.payment_method || '-' }}</p>
                             </div>
                             <div>
-                                <span class="text-gray-400 text-xs">Provider</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Provider</span>
                                 <p class="font-medium text-gray-800 uppercase">{{ payment?.payment_provider?.replace('_', ' ') || '-' }}</p>
                             </div>
                             <div>
-                                <span class="text-gray-400 text-xs">Jumlah</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Jumlah</span>
                                 <p class="font-medium text-gray-800">{{ formatPrice(payment?.amount || 0) }}</p>
                             </div>
                             <div>
-                                <span class="text-gray-400 text-xs">Status</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-xs">Status</span>
                                 <span v-if="payment" :class="paymentStatusColors[payment.payment_status]" class="inline-block px-2 py-0.5 rounded-full text-xs font-bold mt-0.5">
                                     {{ payment.payment_status === 'pending' ? 'Menunggu' : payment.payment_status === 'verified' ? 'Terverifikasi' : payment.payment_status }}
                                 </span>
@@ -229,7 +229,7 @@ function printReceipt() {
 
                     <!-- Footer -->
                     <div class="text-center pt-4 border-t border-gray-100">
-                        <p class="text-xs text-gray-400">Terima kasih telah memesan melalui CateringKu</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Terima kasih telah memesan melalui CateringKu</p>
                         <p class="text-xs text-gray-300 mt-1">Nota ini merupakan bukti transaksi yang sah</p>
                         <p class="text-xs text-gray-300 mt-0.5">Dicetak pada: {{ new Date().toLocaleString('id-ID') }}</p>
                     </div>

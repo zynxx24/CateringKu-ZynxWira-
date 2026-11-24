@@ -1,11 +1,28 @@
 <script setup lang="ts">
 import CateringLayout from '@/layouts/CateringLayout.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import { Head, useForm, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
+const page = usePage()
 const form = useForm({ name: '', email: '', subject: '', message: '' })
+
+// Contact details come from config (CATERINGKU_CONTACT_*); nothing is shown until the owner fills them in.
+const contactRows = computed(() => {
+    const contact = (page.props as any).site?.contact ?? {}
+
+    return [
+        { key: 'email', label: 'Email', icon: '📧' },
+        { key: 'phone', label: 'Telepon', icon: '📞' },
+        { key: 'address', label: 'Alamat', icon: '📍' },
+        { key: 'hours', label: 'Jam operasional', icon: '🕒' },
+    ].filter((r) => contact[r.key]).map((r) => ({ ...r, value: contact[r.key] as string }))
+})
+
+const fieldClass = 'w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] bg-[var(--ck-surface)] text-[var(--ck-text-primary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm'
 
 function submit() {
     form.post('/contact', {
+        preserveScroll: true,
         onSuccess: () => form.reset(),
     })
 }
@@ -13,30 +30,30 @@ function submit() {
 
 <template>
     <CateringLayout>
-        <Head title="Hubungi Kami — CateringKu" />
-        <h1 class="text-3xl font-bold text-gray-800 mb-8">📨 Hubungi Kami</h1>
+        <Head title="Hubungi Kami | CateringKu" />
+        <h1 class="text-3xl font-bold text-[var(--ck-text-primary)] mb-2">Hubungi Kami</h1>
+        <p class="text-[var(--ck-text-secondary)] mb-8">Pertanyaan soal pesanan, kerja sama, atau ingin mendaftar sebagai vendor? Tulis di sini.</p>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Form -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
-                    <h2 class="font-bold text-gray-800 text-lg mb-6">Kirim Pesan</h2>
-                    <form @submit.prevent="submit" class="space-y-5">
+                <div class="bg-[var(--ck-surface)] rounded-2xl border border-[var(--ck-surface-border)] p-6 md:p-8">
+                    <h2 class="font-bold text-[var(--ck-text-primary)] text-lg mb-6">Kirim pesan</h2>
+                    <form class="space-y-5" novalidate @submit.prevent="submit">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama *</label>
-                                <input v-model="form.name" type="text" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm" placeholder="Nama lengkap" />
-                                <p v-if="form.errors.name" class="text-red-500 text-xs mt-1">{{ form.errors.name }}</p>
+                                <label for="contact-name" class="block text-sm font-medium text-[var(--ck-text-primary)] mb-1.5">Nama *</label>
+                                <input id="contact-name" v-model="form.name" type="text" required maxlength="100" autocomplete="name" :class="fieldClass" placeholder="Nama lengkap" :aria-invalid="!!form.errors.name" aria-describedby="contact-name-error" />
+                                <p v-if="form.errors.name" id="contact-name-error" class="text-red-600 dark:text-red-400 text-xs mt-1">{{ form.errors.name }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Email *</label>
-                                <input v-model="form.email" type="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm" placeholder="email@contoh.com" />
-                                <p v-if="form.errors.email" class="text-red-500 text-xs mt-1">{{ form.errors.email }}</p>
+                                <label for="contact-email" class="block text-sm font-medium text-[var(--ck-text-primary)] mb-1.5">Email *</label>
+                                <input id="contact-email" v-model="form.email" type="email" required maxlength="100" autocomplete="email" :class="fieldClass" placeholder="nama@email.com" :aria-invalid="!!form.errors.email" aria-describedby="contact-email-error" />
+                                <p v-if="form.errors.email" id="contact-email-error" class="text-red-600 dark:text-red-400 text-xs mt-1">{{ form.errors.email }}</p>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Subjek *</label>
-                            <select v-model="form.subject" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm">
+                            <label for="contact-subject" class="block text-sm font-medium text-[var(--ck-text-primary)] mb-1.5">Subjek *</label>
+                            <select id="contact-subject" v-model="form.subject" required :class="fieldClass" :aria-invalid="!!form.errors.subject" aria-describedby="contact-subject-error">
                                 <option value="">Pilih subjek</option>
                                 <option value="general">Pertanyaan Umum</option>
                                 <option value="order">Masalah Pesanan</option>
@@ -45,32 +62,29 @@ function submit() {
                                 <option value="feedback">Saran & Masukan</option>
                                 <option value="complaint">Komplain</option>
                             </select>
-                            <p v-if="form.errors.subject" class="text-red-500 text-xs mt-1">{{ form.errors.subject }}</p>
+                            <p v-if="form.errors.subject" id="contact-subject-error" class="text-red-600 dark:text-red-400 text-xs mt-1">{{ form.errors.subject }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Pesan *</label>
-                            <textarea v-model="form.message" rows="5" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm" placeholder="Tulis pesan Anda..."></textarea>
-                            <p v-if="form.errors.message" class="text-red-500 text-xs mt-1">{{ form.errors.message }}</p>
+                            <label for="contact-message" class="block text-sm font-medium text-[var(--ck-text-primary)] mb-1.5">Pesan *</label>
+                            <textarea id="contact-message" v-model="form.message" rows="5" required maxlength="2000" :class="fieldClass" placeholder="Tulis pesan Anda..." :aria-invalid="!!form.errors.message" aria-describedby="contact-message-error"></textarea>
+                            <p v-if="form.errors.message" id="contact-message-error" class="text-red-600 dark:text-red-400 text-xs mt-1">{{ form.errors.message }}</p>
                         </div>
-                        <button type="submit" :disabled="form.processing" class="btn-primary disabled:opacity-50">
-                            {{ form.processing ? 'Mengirim...' : 'Kirim Pesan' }}
+                        <button type="submit" :disabled="form.processing" class="btn-primary disabled:opacity-60">
+                            {{ form.processing ? 'Mengirim...' : 'Kirim pesan' }}
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Contact Info -->
-            <div class="space-y-6">
-                <div v-for="info in [{icon:'📧',title:'Email',detail:'info@cateringku.com'},{icon:'📞',title:'Telepon',detail:'(021) 1234-5678'},{icon:'📍',title:'Lokasi',detail:'Jakarta, Indonesia'},{icon:'🕒',title:'Jam Operasional',detail:'Senin-Jumat: 08:00-17:00'}]" :key="info.title" class="bg-white rounded-2xl border border-gray-100 p-5 card-hover">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center text-xl shrink-0">{{ info.icon }}</div>
-                        <div>
-                            <p class="font-semibold text-gray-800 text-sm">{{ info.title }}</p>
-                            <p class="text-gray-500 text-sm">{{ info.detail }}</p>
-                        </div>
+            <aside v-if="contactRows.length" class="space-y-4" aria-label="Kontak">
+                <div v-for="info in contactRows" :key="info.key" class="bg-[var(--ck-surface)] rounded-2xl border border-[var(--ck-surface-border)] p-5 flex items-center gap-4">
+                    <span class="w-12 h-12 bg-ck-primary-lighter dark:bg-ck-primary/15 rounded-xl flex items-center justify-center text-xl shrink-0" aria-hidden="true">{{ info.icon }}</span>
+                    <div>
+                        <p class="font-semibold text-[var(--ck-text-primary)] text-sm">{{ info.label }}</p>
+                        <p class="text-[var(--ck-text-secondary)] text-sm">{{ info.value }}</p>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
     </CateringLayout>
 </template>

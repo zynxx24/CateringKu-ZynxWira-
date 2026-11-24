@@ -1,64 +1,106 @@
-name: Laravel Tests
+name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+# One run per branch/PR; a newer push cancels the older run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: CateringKu
 
 jobs:
-  laravel-tests:
+  tests:
+    name: Pest (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./CateringKu
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.4'
-        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath
-        coverage: none
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pdo, pdo_sqlite, sqlite3, bcmath, zip, curl, dom
+          coverage: none
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '24'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: CateringKu/package-lock.json
 
-    - name: Install PHP Dependencies
-      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ matrix.php }}-${{ hashFiles('CateringKu/composer.lock') }}
+          restore-keys: composer-${{ matrix.php }}-
 
-    - name: Install Node Dependencies & Build Frontend
-      run: |
-        npm ci
-        npm run build
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
 
-    - name: Generate Key
-      run: php artisan key:generate
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
 
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
+      - name: Install JS dependencies and build assets
+        run: |
+          npm ci
+          npm run build
 
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
+      - name: Run tests
+        run: php artisan test
 
-    - name: Run Migrations
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan migrate --force
+  quality:
+    name: Style, types and audit
+    runs-on: ubuntu-latest
 
-    - name: Execute Tests via Pest
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo, pdo_sqlite, sqlite3, bcmath, zip, curl, dom
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: CateringKu/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --no-progress --prefer-dist
+          cp .env.example .env
+          php artisan key:generate
+          npm ci
+
+      - name: PHP code style (Laravel Pint)
+        run: vendor/bin/pint --test
+
+      - name: TypeScript type check
+        run: |
+          npm run build   # generates the Wayfinder route/action modules the type check imports
+          npm run types:check
+
+      - name: Dependency audit (advisory)
+        continue-on-error: true
+        run: |
+          composer audit
+          npm audit --omit=dev

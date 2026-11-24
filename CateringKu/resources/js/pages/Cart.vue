@@ -35,7 +35,7 @@ const isEmpty = props.carts.length === 0 || props.carts.every((c: any) => c.item
 
 <template>
     <CateringLayout>
-        <Head title="Keranjang Belanja — CateringKu" />
+        <Head title="Keranjang Belanja | CateringKu" />
         <div class="flex items-center gap-3 mb-8">
             <h1 class="text-3xl font-bold text-[var(--ck-text-primary)]">🛒 Keranjang Belanja</h1>
         </div>
@@ -62,12 +62,12 @@ const isEmpty = props.carts.length === 0 || props.carts.every((c: any) => c.item
                                 <p class="text-sm text-ck-primary font-semibold">{{ formatPrice(getUnitPrice(item)) }}</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button @click="updateQty(item.cart_item_id, item.quantity - 1)" class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#2a2c45] hover:bg-gray-200 dark:hover:bg-[#333555] flex items-center justify-center text-[var(--ck-text-secondary)] transition-colors">−</button>
+                                <button type="button" :aria-label="`Kurangi jumlah ${item.menu_item?.item_name ?? item.package?.package_name ?? 'item'}`" @click="updateQty(item.cart_item_id, item.quantity - 1)" class="w-11 h-11 rounded-lg bg-gray-100 dark:bg-[#2a2c45] hover:bg-gray-200 dark:hover:bg-[#333555] flex items-center justify-center text-[var(--ck-text-primary)] transition-colors">−</button>
                                 <span class="w-8 text-center font-medium text-[var(--ck-text-primary)]">{{ item.quantity }}</span>
-                                <button @click="updateQty(item.cart_item_id, item.quantity + 1)" class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#2a2c45] hover:bg-gray-200 dark:hover:bg-[#333555] flex items-center justify-center text-[var(--ck-text-secondary)] transition-colors">+</button>
+                                <button type="button" :aria-label="`Tambah jumlah ${item.menu_item?.item_name ?? item.package?.package_name ?? 'item'}`" @click="updateQty(item.cart_item_id, item.quantity + 1)" class="w-11 h-11 rounded-lg bg-gray-100 dark:bg-[#2a2c45] hover:bg-gray-200 dark:hover:bg-[#333555] flex items-center justify-center text-[var(--ck-text-primary)] transition-colors">+</button>
                             </div>
                             <p class="font-bold text-[var(--ck-text-primary)] w-28 text-right">{{ formatPrice(getItemPrice(item)) }}</p>
-                            <button @click="removeItem(item.cart_item_id)" class="text-red-400 hover:text-red-600 transition-colors p-1">
+                            <button type="button" :aria-label="`Hapus ${item.menu_item?.item_name ?? item.package?.package_name ?? 'item'} dari keranjang`" @click="removeItem(item.cart_item_id)" class="w-11 h-11 flex items-center justify-center rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                         </div>

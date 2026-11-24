@@ -51,7 +51,7 @@ function addToCart(menuItemId: number) {
             <div class="flex items-center justify-between">
                 <div>
                     <span class="text-ck-primary font-bold text-lg">{{ formatPrice(item.price) }}</span>
-                    <span class="text-gray-400 text-xs ml-1">/ {{ item.unit }}</span>
+                    <span class="text-gray-500 dark:text-gray-400 text-xs ml-1">/ {{ item.unit }}</span>
                 </div>
 
                 <button

@@ -18,14 +18,14 @@ function submit() {
             <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -mr-24 -mt-24 animate-float"></div>
             <div class="absolute bottom-0 left-0 w-56 h-56 bg-white/10 rounded-full -ml-20 -mb-20"></div>
             <div class="text-center relative z-10 px-12">
-                <img src="/images/logo.svg" alt="CateringKu" class="w-32 h-32 mx-auto mb-8 rounded-3xl shadow-2xl" />
+                <img src="/images/logo.svg" alt="CateringKu" class="w-32 h-32 mx-auto mb-8 rounded-3xl shadow-2xl bg-white p-3 object-contain" />
                 <h2 class="text-4xl font-bold text-white mb-4">Selamat Datang</h2>
-                <p class="text-orange-100 text-lg leading-relaxed">Masuk untuk mulai memesan katering terbaik untuk acara Anda.</p>
+                <p class="text-orange-100 text-lg leading-relaxed">Masuk untuk melanjutkan pesanan dan melihat status katering Anda.</p>
             </div>
         </div>
 
         <!-- Right - Form -->
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-[var(--ck-body-bg)]">
+        <main class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-[var(--ck-body-bg)]">
             <div class="w-full max-w-md">
                 <div class="lg:hidden flex items-center gap-2 mb-8 justify-center">
                     <img src="/images/logo.svg" alt="CateringKu" class="h-12 w-12 rounded-xl" />
@@ -37,13 +37,13 @@ function submit() {
 
                 <form @submit.prevent="submit" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Email</label>
-                        <input v-model="form.email" type="email" required autofocus class="w-full px-4 py-3.5 rounded-xl border border-[var(--ck-surface-border)] bg-[var(--ck-surface)] text-[var(--ck-text-primary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary placeholder:text-[var(--ck-text-muted)]" placeholder="email@contoh.com" />
+                        <label for="login-field-1" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Email</label>
+                        <input id="login-field-1" v-model="form.email" type="email" required autofocus class="w-full px-4 py-3.5 rounded-xl border border-[var(--ck-surface-border)] bg-[var(--ck-surface)] text-[var(--ck-text-primary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary placeholder:text-[var(--ck-text-muted)]" placeholder="email@contoh.com" />
                         <p v-if="form.errors.email" class="text-red-500 text-xs mt-1">{{ form.errors.email }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Password</label>
-                        <input v-model="form.password" type="password" required class="w-full px-4 py-3.5 rounded-xl border border-[var(--ck-surface-border)] bg-[var(--ck-surface)] text-[var(--ck-text-primary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary placeholder:text-[var(--ck-text-muted)]" placeholder="••••••••" />
+                        <label for="login-field-2" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Password</label>
+                        <input id="login-field-2" v-model="form.password" type="password" required class="w-full px-4 py-3.5 rounded-xl border border-[var(--ck-surface-border)] bg-[var(--ck-surface)] text-[var(--ck-text-primary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary placeholder:text-[var(--ck-text-muted)]" placeholder="••••••••" />
                         <p v-if="form.errors.password" class="text-red-500 text-xs mt-1">{{ form.errors.password }}</p>
                     </div>
                     <div class="flex items-center justify-between">
@@ -62,6 +62,6 @@ function submit() {
                     <Link href="/register" class="text-ck-primary hover:text-ck-primary-dark font-semibold">Daftar Sekarang</Link>
                 </p>
             </div>
-        </div>
+        </main>
     </div>
 </template>

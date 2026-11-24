@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\MenuItem;
+use App\Models\Package;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class CartController extends Controller
@@ -35,35 +37,44 @@ class CartController extends Controller
 
     public function addItem(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'vendor_id' => 'required|exists:vendors,vendor_id',
-            'item_id' => 'nullable|exists:menu_items,item_id',
-            'package_id' => 'nullable|exists:packages,package_id',
-            'quantity' => 'required|integer|min:1',
+            'item_id' => 'nullable|required_without:package_id|prohibits:package_id|exists:menu_items,item_id',
+            'package_id' => 'nullable|required_without:item_id|prohibits:item_id|exists:packages,package_id',
+            'quantity' => 'required|integer|min:1|max:1000',
             'notes' => 'nullable|string|max:255',
         ]);
 
+        // The product must be sold by the vendor whose cart we are filling, and still be on sale.
+        $product = isset($data['item_id'])
+            ? MenuItem::find($data['item_id'])
+            : Package::find($data['package_id']);
+
+        if ($product->vendor_id !== (int) $data['vendor_id'] || ! $product->is_available) {
+            throw ValidationException::withMessages([
+                'item_id' => 'Item ini tidak tersedia untuk vendor tersebut.',
+            ]);
+        }
+
         $cart = Cart::firstOrCreate([
             'user_id' => $request->user()->id,
-            'vendor_id' => $request->vendor_id,
+            'vendor_id' => $data['vendor_id'],
         ]);
 
         $existingItem = CartItem::where('cart_id', $cart->cart_id)
-            ->where(function ($q) use ($request) {
-                if ($request->item_id) $q->where('item_id', $request->item_id);
-                if ($request->package_id) $q->where('package_id', $request->package_id);
-            })
+            ->where('item_id', $data['item_id'] ?? null)
+            ->where('package_id', $data['package_id'] ?? null)
             ->first();
 
         if ($existingItem) {
-            $existingItem->update(['quantity' => $existingItem->quantity + $request->quantity]);
+            $existingItem->update(['quantity' => min(1000, $existingItem->quantity + $data['quantity'])]);
         } else {
             CartItem::create([
                 'cart_id' => $cart->cart_id,
-                'item_id' => $request->item_id,
-                'package_id' => $request->package_id,
-                'quantity' => $request->quantity,
-                'notes' => $request->notes,
+                'item_id' => $data['item_id'] ?? null,
+                'package_id' => $data['package_id'] ?? null,
+                'quantity' => $data['quantity'],
+                'notes' => $data['notes'] ?? null,
             ]);
         }
 
@@ -72,7 +83,7 @@ class CartController extends Controller
 
     public function updateQuantity(Request $request, int $cartItemId)
     {
-        $request->validate(['quantity' => 'required|integer|min:0']);
+        $request->validate(['quantity' => 'required|integer|min:0|max:1000']);
 
         $cartItem = CartItem::findOrFail($cartItemId);
         $cart = Cart::findOrFail($cartItem->cart_id);

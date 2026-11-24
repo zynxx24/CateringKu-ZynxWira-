@@ -12,6 +12,7 @@ class EnsureUserIsAdmin
         if (! $request->user() || ! $request->user()->isAdmin()) {
             abort(403, 'Akses ditolak.');
         }
+
         return $next($request);
     }
 }

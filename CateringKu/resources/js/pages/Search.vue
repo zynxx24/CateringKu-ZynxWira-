@@ -9,14 +9,16 @@ const props = defineProps<{
     categories: any[]
     cities: string[]
     filters: { q?: string, city?: string, sort?: string, type?: string }
+    activeCategory: string | null
 }>()
 
 const search = ref(props.filters.q || '')
 const selectedCity = ref(props.filters.city || '')
 const selectedSort = ref(props.filters.sort || 'rating')
 
-function applyFilters() {
+function applyFilters(clearType = false) {
     router.get('/search', {
+        type: clearType ? undefined : props.filters.type || undefined,
         q: search.value || undefined,
         city: selectedCity.value || undefined,
         sort: selectedSort.value || undefined,
@@ -28,30 +30,34 @@ function formatRating(r: number) { return Number(r).toFixed(1) }
 
 <template>
     <CateringLayout>
-        <Head title="Cari Vendor Katering — CateringKu" />
+        <Head title="Cari Vendor Katering | CateringKu" />
         <!-- Hero -->
         <div class="gradient-hero rounded-3xl p-8 md:p-10 mb-8 text-white relative overflow-hidden">
             <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-16 -mt-16"></div>
             <div class="relative z-10 text-center max-w-2xl mx-auto">
                 <h1 class="text-3xl md:text-4xl font-bold mb-3">Cari Katering</h1>
-                <p class="text-orange-100 mb-6">Temukan vendor katering terbaik sesuai kebutuhan acara Anda</p>
+                <p class="text-orange-100 mb-6">Saring vendor berdasarkan kota, jenis hidangan, atau rating.</p>
                 <div class="flex gap-3 max-w-lg mx-auto">
                     <div class="flex-grow relative">
-                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                        <input v-model="search" @keyup.enter="applyFilters" type="text" placeholder="Cari vendor..." class="w-full pl-12 pr-4 py-3.5 rounded-xl text-[var(--ck-text-primary)] bg-[var(--ck-surface)] focus:ring-2 focus:ring-orange-300 focus:outline-none shadow-lg text-sm" />
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        <input v-model="search" @keyup.enter="applyFilters()" type="text" aria-label="Cari vendor" placeholder="Cari vendor..." class="w-full pl-12 pr-4 py-3.5 rounded-xl text-[var(--ck-text-primary)] bg-[var(--ck-surface)] focus:ring-2 focus:ring-orange-300 focus:outline-none shadow-lg text-sm" />
                     </div>
-                    <button @click="applyFilters" class="bg-white text-ck-primary px-6 py-3.5 rounded-xl font-semibold hover:bg-orange-50 transition-all shadow-lg text-sm">Cari</button>
+                    <button type="button" @click="applyFilters()" class="bg-white text-ck-primary px-6 py-3.5 rounded-xl font-semibold hover:bg-orange-50 transition-all shadow-lg text-sm">Cari</button>
                 </div>
             </div>
         </div>
 
         <!-- Filters -->
         <div class="flex flex-wrap gap-3 mb-8">
-            <select v-model="selectedCity" @change="applyFilters" class="px-4 py-2.5 rounded-xl border border-[var(--ck-surface-border)] text-sm text-[var(--ck-text-secondary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary bg-[var(--ck-surface)]">
+            <span v-if="filters.type" class="inline-flex items-center gap-2 pl-4 pr-2 py-1.5 rounded-xl bg-ck-primary-lighter dark:bg-ck-primary/15 text-ck-primary text-sm font-medium">
+                Kategori: {{ activeCategory ?? filters.type }}
+                <button type="button" class="w-8 h-8 rounded-lg hover:bg-ck-primary/10 flex items-center justify-center" aria-label="Hapus filter kategori" @click="applyFilters(true)">✕</button>
+            </span>
+            <select v-model="selectedCity" aria-label="Filter kota" @change="applyFilters()" class="px-4 py-2.5 rounded-xl border border-[var(--ck-surface-border)] text-sm text-[var(--ck-text-secondary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary bg-[var(--ck-surface)]">
                 <option value="">Semua Kota</option>
                 <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
             </select>
-            <select v-model="selectedSort" @change="applyFilters" class="px-4 py-2.5 rounded-xl border border-[var(--ck-surface-border)] text-sm text-[var(--ck-text-secondary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary bg-[var(--ck-surface)]">
+            <select v-model="selectedSort" aria-label="Urutkan vendor" @change="applyFilters()" class="px-4 py-2.5 rounded-xl border border-[var(--ck-surface-border)] text-sm text-[var(--ck-text-secondary)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary bg-[var(--ck-surface)]">
                 <option value="rating">Rating Tertinggi</option>
                 <option value="newest">Terbaru</option>
                 <option value="name">Nama A-Z</option>
@@ -94,7 +100,7 @@ function formatRating(r: number) { return Number(r).toFixed(1) }
             <Link
                 v-for="link in vendors.links"
                 :key="link.label"
-                :href="link.url || ''"
+                :href="link.url || ''" :aria-disabled="!link.url" :tabindex="link.url ? undefined : -1"
                 class="px-3 py-2 rounded-lg text-sm transition-colors"
                 :class="link.active ? 'bg-ck-primary text-white' : link.url ? 'text-[var(--ck-text-secondary)] hover:bg-[var(--ck-surface)]' : 'text-[var(--ck-text-muted)] cursor-not-allowed'"
                 v-html="link.label"

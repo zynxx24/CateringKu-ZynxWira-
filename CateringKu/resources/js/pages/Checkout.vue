@@ -47,6 +47,7 @@ const form = useForm({
     special_request: '',
     payment_method: '',
     payment_provider: '',
+    promo_code: '',
 })
 
 // Watch form errors from server validation (must be AFTER form declaration)
@@ -168,9 +169,63 @@ function getAdjustedItems() {
 const adjustedItems = computed(() => getAdjustedItems())
 
 const subtotal = computed(() => adjustedItems.value.reduce((t, i) => t + i.subtotal, 0))
-const tax = computed(() => Math.round(subtotal.value * 0.11))
+const discount = ref(0)
+const tax = computed(() => Math.round((subtotal.value - discount.value) * 0.11))
 const deliveryFee = 15000
-const total = computed(() => subtotal.value + tax.value + deliveryFee)
+const total = computed(() => subtotal.value - discount.value + tax.value + deliveryFee)
+
+// --- Promo code (the server recomputes the discount on checkout; this is only a preview) ---
+const promoInput = ref('')
+const promoMessage = ref('')
+const promoApplied = ref(false)
+const promoLoading = ref(false)
+let promoTimer: ReturnType<typeof setTimeout> | null = null
+
+function csrfToken() {
+    const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/)
+    return match ? decodeURIComponent(match[1]) : ''
+}
+
+function clearPromo() {
+    promoApplied.value = false
+    promoMessage.value = ''
+    discount.value = 0
+    form.promo_code = ''
+}
+
+async function applyPromo(silent = false) {
+    const code = promoInput.value.trim()
+    if (!code || !form.vendor_id) return
+    promoLoading.value = true
+    try {
+        const res = await fetch('/api/promo/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': csrfToken() },
+            body: JSON.stringify({ code, vendor_id: form.vendor_id, num_people: form.num_people || 1 }),
+        })
+        const data = await res.json()
+        if (res.ok && data.valid) {
+            discount.value = data.discount
+            form.promo_code = data.promo.promo_code
+            promoApplied.value = true
+            promoMessage.value = `${data.promo.promo_name} diterapkan.`
+        } else {
+            clearPromo()
+            if (!silent) promoMessage.value = data.message || 'Kode promo tidak valid.'
+        }
+    } catch {
+        if (!silent) promoMessage.value = 'Gagal memeriksa kode promo. Coba lagi.'
+    } finally {
+        promoLoading.value = false
+    }
+}
+
+// The discount can depend on the order size, so re-check it when the guest count changes.
+watch(() => form.num_people, () => {
+    if (!promoApplied.value) return
+    if (promoTimer) clearTimeout(promoTimer)
+    promoTimer = setTimeout(() => applyPromo(true), 400)
+})
 
 function formatPrice(p: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(p)
@@ -210,7 +265,7 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
 
 <template>
     <CateringLayout>
-        <Head title="Checkout Pesanan — CateringKu" />
+        <Head title="Checkout Pesanan | CateringKu" />
 
         <!-- Toast Popup -->
         <Transition
@@ -257,25 +312,25 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tipe Acara *</label>
-                            <select v-model="form.event_type" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]">
+                            <label for="checkout-field-1" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tipe Acara *</label>
+                            <select id="checkout-field-1" v-model="form.event_type" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]">
                                 <option value="">Pilih tipe acara</option>
                                 <option v-for="t in eventTypes" :key="t" :value="t">{{ t }}</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Jumlah Tamu *</label>
-                            <input v-model.number="form.num_people" type="number" min="1" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jumlah tamu undangan" />
+                            <label for="checkout-field-2" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Jumlah Tamu *</label>
+                            <input id="checkout-field-2" v-model.number="form.num_people" type="number" min="1" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jumlah tamu undangan" />
                             <p class="text-xs text-[var(--ck-text-muted)] mt-1">Jumlah porsi akan dihitung otomatis berdasarkan tamu</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tanggal Acara *</label>
-                            <input v-model="form.event_date" type="date" :min="minDate" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
+                            <label for="checkout-field-3" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Tanggal Acara *</label>
+                            <input id="checkout-field-3" v-model="form.event_date" type="date" :min="minDate" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
                             <p v-if="form.errors.event_date" class="text-red-500 text-xs mt-1">{{ form.errors.event_date }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Waktu Acara *</label>
-                            <input v-model="form.event_time" type="time" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
+                            <label for="checkout-field-4" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Waktu Acara *</label>
+                            <input id="checkout-field-4" v-model="form.event_time" type="time" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" />
                         </div>
                     </div>
                 </div>
@@ -288,17 +343,17 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
                     </h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Alamat Lengkap *</label>
-                            <textarea v-model="form.delivery_address" rows="3" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jl. ... No. ..., RT/RW, Kelurahan, Kecamatan"></textarea>
+                            <label for="checkout-field-5" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Alamat Lengkap *</label>
+                            <textarea id="checkout-field-5" v-model="form.delivery_address" rows="3" required class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Jl. ... No. ..., RT/RW, Kelurahan, Kecamatan"></textarea>
                             <p v-if="form.errors.delivery_address" class="text-red-500 text-xs mt-1">{{ form.errors.delivery_address }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Kota</label>
-                            <input v-model="form.delivery_city" type="text" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Nama kota" />
+                            <label for="checkout-field-6" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Kota</label>
+                            <input id="checkout-field-6" v-model="form.delivery_city" type="text" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Nama kota" />
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Catatan Khusus</label>
-                            <textarea v-model="form.special_request" rows="2" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Mis: alergi, pantangan, dekorasi khusus..."></textarea>
+                            <label for="checkout-field-7" class="block text-sm font-medium text-[var(--ck-text-secondary)] mb-1.5">Catatan Khusus</label>
+                            <textarea id="checkout-field-7" v-model="form.special_request" rows="2" class="w-full px-4 py-3 rounded-xl border border-[var(--ck-surface-border)] focus:ring-2 focus:ring-ck-primary focus:border-ck-primary text-sm bg-[var(--ck-surface)] text-[var(--ck-text-primary)]" placeholder="Mis: alergi, pantangan, dekorasi khusus..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -409,9 +464,34 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
 
                     <hr class="border-[var(--ck-surface-border)] mb-3">
 
+                    <!-- Promo code -->
+                    <div class="mb-4">
+                        <label for="promo-code" class="block text-xs font-semibold text-[var(--ck-text-secondary)] mb-1.5">Kode promo</label>
+                        <div class="flex gap-2">
+                            <input
+                                id="promo-code"
+                                v-model="promoInput"
+                                :disabled="promoApplied"
+                                type="text"
+                                maxlength="50"
+                                autocomplete="off"
+                                placeholder="Mis: WELCOME10"
+                                class="flex-1 min-w-0 px-3 py-2 rounded-xl border border-[var(--ck-surface-border)] text-sm uppercase bg-[var(--ck-surface)] text-[var(--ck-text-primary)] focus:ring-2 focus:ring-ck-primary disabled:opacity-60"
+                                @keydown.enter.prevent="applyPromo()"
+                            />
+                            <button v-if="!promoApplied" type="button" :disabled="promoLoading || !promoInput.trim()" class="px-4 py-2 rounded-xl text-sm font-semibold border border-ck-primary text-ck-primary disabled:opacity-50" @click="applyPromo()">
+                                {{ promoLoading ? '...' : 'Pakai' }}
+                            </button>
+                            <button v-else type="button" class="px-4 py-2 rounded-xl text-sm font-semibold border border-[var(--ck-surface-border)] text-[var(--ck-text-secondary)]" @click="clearPromo(); promoInput = ''">Hapus</button>
+                        </div>
+                        <p v-if="promoMessage" class="text-xs mt-1.5" :class="promoApplied ? 'text-green-600' : 'text-red-500'" role="status">{{ promoMessage }}</p>
+                        <p v-if="form.errors.promo_code" class="text-red-500 text-xs mt-1">{{ form.errors.promo_code }}</p>
+                    </div>
+
                     <!-- Totals -->
                     <div class="space-y-2.5 text-sm">
                         <div class="flex justify-between text-[var(--ck-text-secondary)]"><span>Subtotal</span><span>{{ formatPrice(subtotal) }}</span></div>
+                        <div v-if="discount > 0" class="flex justify-between text-green-600"><span>Diskon promo</span><span>-{{ formatPrice(discount) }}</span></div>
                         <div class="flex justify-between text-[var(--ck-text-secondary)]"><span>PPN (11%)</span><span>{{ formatPrice(tax) }}</span></div>
                         <div class="flex justify-between text-[var(--ck-text-secondary)]"><span>Biaya Pengiriman</span><span>{{ formatPrice(deliveryFee) }}</span></div>
                         <hr class="border-[var(--ck-surface-border)]">
