@@ -15,7 +15,7 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
-        $categories = Category::withCount(['menuItems' => fn($q) => $q->where('is_available', true)])
+        $categories = Category::withCount(['menuItems' => fn ($q) => $q->where('is_available', true)])
             ->get();
 
         return Inertia::render('Home', [

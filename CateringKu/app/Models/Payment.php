@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     protected $primaryKey = 'payment_id';
+
     public $timestamps = false;
 
     protected $fillable = [

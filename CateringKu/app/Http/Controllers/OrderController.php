@@ -25,7 +25,7 @@ class OrderController extends Controller
             ->where('user_id', $request->user()->id)
             ->findOrFail($id);
 
-        $canReview = $order->status === 'completed' && !$order->review;
+        $canReview = $order->status === 'completed' && ! $order->review;
 
         return Inertia::render('Orders/Show', [
             'order' => $order,

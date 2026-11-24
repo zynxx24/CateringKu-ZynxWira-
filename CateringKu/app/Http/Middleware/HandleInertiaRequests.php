@@ -54,7 +54,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
             ],
             'meta' => [
-                'title' => config('app.name') . ' — Pesan Katering Online Terpercaya',
+                'title' => config('app.name').' — Pesan Katering Online Terpercaya',
                 'description' => 'Platform pemesanan katering online terlengkap di Indonesia. Vendor terpercaya, proses cepat, pembayaran mudah.',
                 'url' => $request->url(),
             ],

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\MenuItem;
-use App\Models\Order;
 use App\Models\Review;
 use App\Models\Vendor;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -48,7 +47,7 @@ class VendorDashboardController extends Controller
 
         $orders = $vendor->orders()
             ->with('user:id,name,phone')
-            ->when($request->status, fn($q, $s) => $q->where('status', $s))
+            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->orderByDesc('created_at')
             ->paginate(15);
 
@@ -130,6 +129,7 @@ class VendorDashboardController extends Controller
     {
         $vendor = $this->getVendor($request);
         MenuItem::where('vendor_id', $vendor->vendor_id)->findOrFail($id)->delete();
+
         return back()->with('success', 'Menu berhasil dihapus.');
     }
 

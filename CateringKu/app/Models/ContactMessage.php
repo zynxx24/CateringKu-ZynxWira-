@@ -30,6 +30,7 @@ class ContactMessage extends Model
             'feedback' => 'Saran & Masukan',
             'complaint' => 'Komplain',
         ];
+
         return $labels[$subject] ?? ucfirst($subject);
     }
 }

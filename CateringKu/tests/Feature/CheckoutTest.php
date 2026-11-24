@@ -2,7 +2,6 @@
 
 use App\Models\Cart;
 use App\Models\Order;
-use App\Models\Promo;
 use App\Models\PromoUsage;
 use App\Models\User;
 

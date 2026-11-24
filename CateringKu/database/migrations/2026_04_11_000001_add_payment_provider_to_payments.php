@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         // Only add column if it doesn't already exist
-        if (!Schema::hasColumn('payments', 'payment_provider')) {
+        if (! Schema::hasColumn('payments', 'payment_provider')) {
             Schema::table('payments', function (Blueprint $table) {
                 $table->string('payment_provider', 50)->nullable()->after('payment_method');
             });

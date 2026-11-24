@@ -1,5 +1,11 @@
 <?php
 
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\MenuItem;
+use App\Models\Promo;
+use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -45,11 +51,11 @@ expect()->extend('toBeOne', function () {
 */
 
 /** A vendor (with its owner account) that is open for business. */
-function makeVendor(array $overrides = []): App\Models\Vendor
+function makeVendor(array $overrides = []): Vendor
 {
-    $owner = App\Models\User::factory()->create(['role' => 'vendor']);
+    $owner = User::factory()->create(['role' => 'vendor']);
 
-    return App\Models\Vendor::create(array_merge([
+    return Vendor::create(array_merge([
         'user_id' => $owner->id,
         'vendor_name' => 'Dapur Uji',
         'address' => 'Jl. Contoh No. 1',
@@ -58,9 +64,9 @@ function makeVendor(array $overrides = []): App\Models\Vendor
     ], $overrides));
 }
 
-function makeMenuItem(App\Models\Vendor $vendor, array $overrides = []): App\Models\MenuItem
+function makeMenuItem(Vendor $vendor, array $overrides = []): MenuItem
 {
-    return App\Models\MenuItem::create(array_merge([
+    return MenuItem::create(array_merge([
         'vendor_id' => $vendor->vendor_id,
         'item_name' => 'Nasi Ayam',
         'price' => 20000,
@@ -68,9 +74,9 @@ function makeMenuItem(App\Models\Vendor $vendor, array $overrides = []): App\Mod
     ], $overrides));
 }
 
-function makePromo(array $overrides = []): App\Models\Promo
+function makePromo(array $overrides = []): Promo
 {
-    return App\Models\Promo::create(array_merge([
+    return Promo::create(array_merge([
         'promo_code' => 'HEMAT10',
         'promo_name' => 'Hemat 10%',
         'discount_type' => 'percentage',
@@ -83,15 +89,15 @@ function makePromo(array $overrides = []): App\Models\Promo
 }
 
 /** Put one menu item in the customer's cart and return the cart. */
-function fillCart(App\Models\User $customer, App\Models\Vendor $vendor, App\Models\MenuItem $item, int $quantity = 1): App\Models\Cart
+function fillCart(User $customer, Vendor $vendor, MenuItem $item, int $quantity = 1): Cart
 {
-    $cart = App\Models\Cart::create(['user_id' => $customer->id, 'vendor_id' => $vendor->vendor_id]);
-    App\Models\CartItem::create(['cart_id' => $cart->cart_id, 'item_id' => $item->item_id, 'quantity' => $quantity]);
+    $cart = Cart::create(['user_id' => $customer->id, 'vendor_id' => $vendor->vendor_id]);
+    CartItem::create(['cart_id' => $cart->cart_id, 'item_id' => $item->item_id, 'quantity' => $quantity]);
 
     return $cart;
 }
 
-function checkoutPayload(App\Models\Vendor $vendor, array $overrides = []): array
+function checkoutPayload(Vendor $vendor, array $overrides = []): array
 {
     return array_merge([
         'vendor_id' => $vendor->vendor_id,

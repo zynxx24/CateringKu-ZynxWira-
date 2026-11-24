@@ -7,6 +7,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\VendorDashboardController;
@@ -14,6 +15,7 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsVendor;
 use App\Http\Middleware\ShareCartCount;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,8 +29,8 @@ Route::middleware(ShareCartCount::class)->group(function () {
     Route::get('/about', [AboutController::class, 'index'])->name('about');
     Route::get('/contact', [ContactController::class, 'index'])->name('contact');
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
-    Route::get('/terms', fn () => \Inertia\Inertia::render('Terms'))->name('terms');
-    Route::get('/privacy', fn () => \Inertia\Inertia::render('Privacy'))->name('privacy');
+    Route::get('/terms', fn () => Inertia::render('Terms'))->name('terms');
+    Route::get('/privacy', fn () => Inertia::render('Privacy'))->name('privacy');
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +56,7 @@ Route::middleware(ShareCartCount::class)->group(function () {
         Route::post('/orders/{id}/review', [OrderController::class, 'storeReview'])->name('orders.review');
 
         // Profile (public-facing)
-        Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
 
         // Promo validation (API)
         Route::post('/api/promo/validate', [PromoController::class, 'validate_'])->middleware('throttle:20,1')->name('promo.validate');
@@ -62,8 +64,13 @@ Route::middleware(ShareCartCount::class)->group(function () {
         // Dashboard redirect based on role
         Route::get('/dashboard', function () {
             $user = auth()->user();
-            if ($user->isAdmin()) return redirect()->route('admin.dashboard');
-            if ($user->isVendor()) return redirect()->route('vendor.dashboard');
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+            if ($user->isVendor()) {
+                return redirect()->route('vendor.dashboard');
+            }
+
             return redirect()->route('orders.index');
         })->name('dashboard');
     });
