@@ -44,7 +44,62 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/** A vendor (with its owner account) that is open for business. */
+function makeVendor(array $overrides = []): App\Models\Vendor
 {
-    // ..
+    $owner = App\Models\User::factory()->create(['role' => 'vendor']);
+
+    return App\Models\Vendor::create(array_merge([
+        'user_id' => $owner->id,
+        'vendor_name' => 'Dapur Uji',
+        'address' => 'Jl. Contoh No. 1',
+        'city' => 'Jakarta',
+        'status' => 'active',
+    ], $overrides));
+}
+
+function makeMenuItem(App\Models\Vendor $vendor, array $overrides = []): App\Models\MenuItem
+{
+    return App\Models\MenuItem::create(array_merge([
+        'vendor_id' => $vendor->vendor_id,
+        'item_name' => 'Nasi Ayam',
+        'price' => 20000,
+        'is_available' => true,
+    ], $overrides));
+}
+
+function makePromo(array $overrides = []): App\Models\Promo
+{
+    return App\Models\Promo::create(array_merge([
+        'promo_code' => 'HEMAT10',
+        'promo_name' => 'Hemat 10%',
+        'discount_type' => 'percentage',
+        'discount_value' => 10,
+        'min_order' => 0,
+        'valid_from' => now()->subDay(),
+        'valid_until' => now()->addMonth(),
+        'is_active' => true,
+    ], $overrides));
+}
+
+/** Put one menu item in the customer's cart and return the cart. */
+function fillCart(App\Models\User $customer, App\Models\Vendor $vendor, App\Models\MenuItem $item, int $quantity = 1): App\Models\Cart
+{
+    $cart = App\Models\Cart::create(['user_id' => $customer->id, 'vendor_id' => $vendor->vendor_id]);
+    App\Models\CartItem::create(['cart_id' => $cart->cart_id, 'item_id' => $item->item_id, 'quantity' => $quantity]);
+
+    return $cart;
+}
+
+function checkoutPayload(App\Models\Vendor $vendor, array $overrides = []): array
+{
+    return array_merge([
+        'vendor_id' => $vendor->vendor_id,
+        'event_date' => now()->addDays(3)->toDateString(),
+        'event_time' => '12:00',
+        'delivery_address' => 'Jl. Merdeka No. 10',
+        'num_people' => 10,
+        'payment_method' => 'qris',
+        'payment_provider' => 'qris',
+    ], $overrides);
 }

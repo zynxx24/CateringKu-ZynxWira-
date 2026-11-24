@@ -5,12 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Promo;
+use App\Models\PromoUsage;
+use App\Services\OrderPricing;
+use App\Support\PaymentOptions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class CheckoutController extends Controller
 {
+    public function __construct(private readonly OrderPricing $pricing) {}
+
     public function index(Request $request)
     {
         $carts = Cart::where('user_id', $request->user()->id)
@@ -29,101 +37,142 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'vendor_id' => 'required|exists:vendors,vendor_id',
             'event_date' => 'required|date|after:today',
-            'event_time' => 'required',
+            'event_time' => 'required|date_format:H:i',
             'delivery_address' => 'required|string|max:500',
             'delivery_city' => 'nullable|string|max:50',
             'num_people' => 'required|integer|min:1|max:10000',
             'event_type' => 'nullable|string|max:50',
             'special_request' => 'nullable|string|max:1000',
-            'payment_method' => 'required|string|max:50',
-            'payment_provider' => 'required|string|max:50',
+            'payment_method' => ['required', 'string', Rule::in(PaymentOptions::methods())],
+            'payment_provider' => ['required', 'string', Rule::in(PaymentOptions::providersFor($request->input('payment_method')))],
+            'promo_code' => 'nullable|string|max:50',
         ], [
             'event_date.after' => 'Tanggal acara harus setelah hari ini. Silakan pilih tanggal yang akan datang.',
+            'event_time.date_format' => 'Format jam acara tidak valid.',
             'num_people.min' => 'Jumlah tamu minimal 1 orang.',
             'num_people.max' => 'Jumlah tamu maksimal 10.000 orang.',
             'delivery_address.required' => 'Alamat pengiriman wajib diisi.',
             'payment_method.required' => 'Silakan pilih metode pembayaran.',
+            'payment_method.in' => 'Metode pembayaran tidak tersedia.',
             'payment_provider.required' => 'Silakan pilih provider pembayaran.',
+            'payment_provider.in' => 'Provider tidak cocok dengan metode pembayaran.',
         ]);
 
-        $cart = Cart::where('user_id', $request->user()->id)
-            ->where('vendor_id', $request->vendor_id)
+        $userId = $request->user()->id;
+        $numPeople = (int) $data['num_people'];
+
+        $cart = Cart::where('user_id', $userId)
+            ->where('vendor_id', $data['vendor_id'])
             ->with(['items.menuItem', 'items.package'])
             ->firstOrFail();
 
-        $numPeople = $request->num_people;
+        $this->assertCartIsOrderable($cart);
 
-        // Calculate subtotal with quantities adjusted by num_people
-        $subtotal = 0;
-        foreach ($cart->items as $item) {
-            $unitPrice = $item->menuItem ? $item->menuItem->price : ($item->package ? $item->package->price_per_person : 0);
-            $adjustedQty = $item->quantity * $numPeople;
-            $subtotal += $unitPrice * $adjustedQty;
-        }
-
-        $tax = round($subtotal * 0.11, 2);
-        $deliveryFee = 15000;
-        $totalAmount = $subtotal + $tax + $deliveryFee;
-
-        $createdOrder = null;
+        // Authoritative totals: computed here from database prices, never from the browser.
+        $quote = $this->pricing->quote($cart, $numPeople, $data['promo_code'] ?? null, $userId);
 
         try {
-            DB::transaction(function () use ($request, $cart, $subtotal, $tax, $deliveryFee, $totalAmount, $numPeople, &$createdOrder) {
+            $order = DB::transaction(function () use ($data, $cart, $quote, $numPeople, $userId) {
+                if ($quote['promo']) {
+                    $this->redeemPromo($quote['promo']);
+                }
+
                 $order = Order::create([
-                    'user_id' => $request->user()->id,
-                    'vendor_id' => $request->vendor_id,
+                    'user_id' => $userId,
+                    'vendor_id' => $cart->vendor_id,
                     'order_number' => Order::generateOrderNumber(),
                     'order_type' => 'custom',
-                    'event_type' => $request->event_type,
-                    'event_date' => $request->event_date,
-                    'event_time' => $request->event_time,
-                    'delivery_address' => $request->delivery_address,
-                    'delivery_city' => $request->delivery_city,
+                    'event_type' => $data['event_type'] ?? null,
+                    'event_date' => $data['event_date'],
+                    'event_time' => $data['event_time'],
+                    'delivery_address' => $data['delivery_address'],
+                    'delivery_city' => $data['delivery_city'] ?? null,
                     'num_people' => $numPeople,
-                    'subtotal' => $subtotal,
-                    'tax' => $tax,
-                    'delivery_fee' => $deliveryFee,
-                    'total_amount' => $totalAmount,
-                    'special_request' => $request->special_request,
+                    'subtotal' => $quote['subtotal'],
+                    'tax' => $quote['tax'],
+                    'delivery_fee' => $quote['delivery_fee'],
+                    'discount' => $quote['discount'],
+                    'total_amount' => $quote['total'],
+                    'special_request' => $data['special_request'] ?? null,
                 ]);
 
                 foreach ($cart->items as $item) {
-                    $unitPrice = $item->menuItem ? $item->menuItem->price : ($item->package ? $item->package->price_per_person : 0);
-                    $itemName = $item->menuItem ? $item->menuItem->item_name : ($item->package ? $item->package->package_name : '');
-                    // BUG FIX: Multiply quantity by num_people
-                    $adjustedQty = $item->quantity * $numPeople;
+                    $unitPrice = $this->pricing->unitPrice($item);
+                    $quantity = $item->quantity * $numPeople;
 
                     OrderItem::create([
                         'order_id' => $order->order_id,
                         'item_id' => $item->item_id,
                         'package_id' => $item->package_id,
-                        'item_name' => $itemName,
-                        'quantity' => $adjustedQty,
+                        'item_name' => $item->menuItem?->item_name ?? $item->package?->package_name ?? '',
+                        'quantity' => $quantity,
                         'unit_price' => $unitPrice,
-                        'subtotal' => $unitPrice * $adjustedQty,
+                        'subtotal' => $unitPrice * $quantity,
                         'notes' => $item->notes,
                     ]);
                 }
 
                 $order->payments()->create([
-                    'payment_method' => $request->payment_method,
-                    'payment_provider' => $request->payment_provider,
-                    'amount' => $totalAmount,
+                    'payment_method' => $data['payment_method'],
+                    'payment_provider' => $data['payment_provider'],
+                    'amount' => $quote['total'],
                 ]);
+
+                if ($quote['promo']) {
+                    PromoUsage::create([
+                        'promo_id' => $quote['promo']->promo_id,
+                        'user_id' => $userId,
+                        'order_id' => $order->order_id,
+                        'discount_amount' => $quote['discount'],
+                    ]);
+                }
 
                 $cart->items()->delete();
                 $cart->delete();
 
-                $createdOrder = $order;
+                return $order;
             });
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            report($e);
+
             return back()->with('error', 'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi.')->withInput();
         }
 
-        // Redirect to receipt page after successful checkout
-        return redirect()->route('orders.receipt', $createdOrder->order_id)->with('success', 'Pesanan berhasil dibuat!');
+        return redirect()->route('orders.receipt', $order->order_id)->with('success', 'Pesanan berhasil dibuat!');
+    }
+
+    /** Refuse to order from a cart that has an unavailable menu item or package. */
+    private function assertCartIsOrderable(Cart $cart): void
+    {
+        if ($cart->items->isEmpty()) {
+            throw ValidationException::withMessages(['vendor_id' => 'Keranjang untuk vendor ini kosong.']);
+        }
+
+        foreach ($cart->items as $item) {
+            $product = $item->menuItem ?? $item->package;
+
+            if (! $product || ! $product->is_available) {
+                throw ValidationException::withMessages([
+                    'vendor_id' => 'Salah satu item di keranjang sudah tidak tersedia. Silakan perbarui keranjang Anda.',
+                ]);
+            }
+        }
+    }
+
+    /** Count one use of the promo, atomically, so the usage limit cannot be exceeded by parallel checkouts. */
+    private function redeemPromo(Promo $promo): void
+    {
+        $redeemed = Promo::active()
+            ->where('promo_id', $promo->promo_id)
+            ->update(['used_count' => DB::raw('used_count + 1')]);
+
+        if (! $redeemed) {
+            throw ValidationException::withMessages(['promo_code' => 'Kode promo sudah habis dipakai.']);
+        }
     }
 }

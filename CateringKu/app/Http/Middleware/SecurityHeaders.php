@@ -24,8 +24,9 @@ class SecurityHeaders
         // ── Anti-Clickjacking ──────────────────────────────
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
-        // ── XSS Filter ─────────────────────────────────────
-        $response->headers->set('X-XSS-Protection', '1; mode=block');
+        // ── XSS Auditor ────────────────────────────────────
+        // The legacy auditor is itself exploitable; modern guidance is to disable it and rely on CSP.
+        $response->headers->set('X-XSS-Protection', '0');
 
         // ── Referrer Policy ─────────────────────────────────
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -72,9 +73,12 @@ class SecurityHeaders
             $viteConnectOrigins = ' '.implode(' ', [...$httpOrigins, ...$wsOrigins]);
         }
 
+        // 'unsafe-eval' is only needed by the Vite dev server; production bundles are precompiled.
+        $unsafeEval = $isDev ? " 'unsafe-eval'" : '';
+
         $cspDirectives = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'{$viteScriptOrigins}", // unsafe-eval for Vite HMR
+            "script-src 'self' 'unsafe-inline'{$unsafeEval}{$viteScriptOrigins}",
             "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://fonts.googleapis.com{$viteScriptOrigins}",
             "font-src 'self' https://fonts.bunny.net https://fonts.gstatic.com data:{$viteScriptOrigins}",
             "img-src 'self' data: blob: https:",

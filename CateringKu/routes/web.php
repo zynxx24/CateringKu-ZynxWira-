@@ -26,7 +26,7 @@ Route::middleware(ShareCartCount::class)->group(function () {
     Route::get('/vendor/{id}', [VendorController::class, 'show'])->name('vendor.show');
     Route::get('/about', [AboutController::class, 'index'])->name('about');
     Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-    Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+    Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
     Route::get('/terms', fn () => \Inertia\Inertia::render('Terms'))->name('terms');
     Route::get('/privacy', fn () => \Inertia\Inertia::render('Privacy'))->name('privacy');
 
@@ -44,7 +44,7 @@ Route::middleware(ShareCartCount::class)->group(function () {
 
         // Checkout
         Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-        Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+        Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store');
 
         // Orders
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -57,7 +57,7 @@ Route::middleware(ShareCartCount::class)->group(function () {
         Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
 
         // Promo validation (API)
-        Route::post('/api/promo/validate', [PromoController::class, 'validate_'])->name('promo.validate');
+        Route::post('/api/promo/validate', [PromoController::class, 'validate_'])->middleware('throttle:20,1')->name('promo.validate');
 
         // Dashboard redirect based on role
         Route::get('/dashboard', function () {

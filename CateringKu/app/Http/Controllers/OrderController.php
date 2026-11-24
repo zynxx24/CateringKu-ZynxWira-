@@ -46,13 +46,15 @@ class OrderController extends Controller
 
     public function cancel(Request $request, int $id)
     {
+        $data = $request->validate(['reason' => 'nullable|string|max:500']);
+
         $order = Order::where('user_id', $request->user()->id)
             ->where('status', 'pending')
             ->findOrFail($id);
 
         $order->update([
             'status' => 'cancelled',
-            'cancellation_reason' => $request->input('reason', 'Dibatalkan oleh pelanggan'),
+            'cancellation_reason' => $data['reason'] ?? 'Dibatalkan oleh pelanggan',
         ]);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan.');

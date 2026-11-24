@@ -9,6 +9,10 @@ class PromoUsage extends Model
 {
     protected $table = 'promo_usage';
 
+    protected $primaryKey = 'usage_id';
+
+    public $timestamps = false;
+
     protected $fillable = [
         'promo_id',
         'user_id',

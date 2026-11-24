@@ -76,6 +76,8 @@ class AdminController extends Controller
     public function verifyPayment(Request $request, int $paymentId)
     {
         $payment = Payment::findOrFail($paymentId);
+        abort_unless($payment->payment_status === 'pending', 409, 'Pembayaran ini sudah diproses.');
+
         $payment->update([
             'payment_status' => 'verified',
             'verified_by' => $request->user()->id,

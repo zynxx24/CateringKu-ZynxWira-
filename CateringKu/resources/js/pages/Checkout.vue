@@ -47,6 +47,7 @@ const form = useForm({
     special_request: '',
     payment_method: '',
     payment_provider: '',
+    promo_code: '',
 })
 
 // Watch form errors from server validation (must be AFTER form declaration)
@@ -168,9 +169,63 @@ function getAdjustedItems() {
 const adjustedItems = computed(() => getAdjustedItems())
 
 const subtotal = computed(() => adjustedItems.value.reduce((t, i) => t + i.subtotal, 0))
-const tax = computed(() => Math.round(subtotal.value * 0.11))
+const discount = ref(0)
+const tax = computed(() => Math.round((subtotal.value - discount.value) * 0.11))
 const deliveryFee = 15000
-const total = computed(() => subtotal.value + tax.value + deliveryFee)
+const total = computed(() => subtotal.value - discount.value + tax.value + deliveryFee)
+
+// --- Promo code (the server recomputes the discount on checkout; this is only a preview) ---
+const promoInput = ref('')
+const promoMessage = ref('')
+const promoApplied = ref(false)
+const promoLoading = ref(false)
+let promoTimer: ReturnType<typeof setTimeout> | null = null
+
+function csrfToken() {
+    const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/)
+    return match ? decodeURIComponent(match[1]) : ''
+}
+
+function clearPromo() {
+    promoApplied.value = false
+    promoMessage.value = ''
+    discount.value = 0
+    form.promo_code = ''
+}
+
+async function applyPromo(silent = false) {
+    const code = promoInput.value.trim()
+    if (!code || !form.vendor_id) return
+    promoLoading.value = true
+    try {
+        const res = await fetch('/api/promo/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': csrfToken() },
+            body: JSON.stringify({ code, vendor_id: form.vendor_id, num_people: form.num_people || 1 }),
+        })
+        const data = await res.json()
+        if (res.ok && data.valid) {
+            discount.value = data.discount
+            form.promo_code = data.promo.promo_code
+            promoApplied.value = true
+            promoMessage.value = `${data.promo.promo_name} diterapkan.`
+        } else {
+            clearPromo()
+            if (!silent) promoMessage.value = data.message || 'Kode promo tidak valid.'
+        }
+    } catch {
+        if (!silent) promoMessage.value = 'Gagal memeriksa kode promo. Coba lagi.'
+    } finally {
+        promoLoading.value = false
+    }
+}
+
+// The discount can depend on the order size, so re-check it when the guest count changes.
+watch(() => form.num_people, () => {
+    if (!promoApplied.value) return
+    if (promoTimer) clearTimeout(promoTimer)
+    promoTimer = setTimeout(() => applyPromo(true), 400)
+})
 
 function formatPrice(p: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(p)
@@ -409,9 +464,34 @@ const eventTypes = ['Pernikahan', 'Ulang Tahun', 'Rapat Kantor', 'Seminar', 'Ari
 
                     <hr class="border-[var(--ck-surface-border)] mb-3">
 
+                    <!-- Promo code -->
+                    <div class="mb-4">
+                        <label for="promo-code" class="block text-xs font-semibold text-[var(--ck-text-secondary)] mb-1.5">Kode promo</label>
+                        <div class="flex gap-2">
+                            <input
+                                id="promo-code"
+                                v-model="promoInput"
+                                :disabled="promoApplied"
+                                type="text"
+                                maxlength="50"
+                                autocomplete="off"
+                                placeholder="Mis: WELCOME10"
+                                class="flex-1 min-w-0 px-3 py-2 rounded-xl border border-[var(--ck-surface-border)] text-sm uppercase bg-[var(--ck-surface)] text-[var(--ck-text-primary)] focus:ring-2 focus:ring-ck-primary disabled:opacity-60"
+                                @keydown.enter.prevent="applyPromo()"
+                            />
+                            <button v-if="!promoApplied" type="button" :disabled="promoLoading || !promoInput.trim()" class="px-4 py-2 rounded-xl text-sm font-semibold border border-ck-primary text-ck-primary disabled:opacity-50" @click="applyPromo()">
+                                {{ promoLoading ? '...' : 'Pakai' }}
+                            </button>
+                            <button v-else type="button" class="px-4 py-2 rounded-xl text-sm font-semibold border border-[var(--ck-surface-border)] text-[var(--ck-text-secondary)]" @click="clearPromo(); promoInput = ''">Hapus</button>
+                        </div>
+                        <p v-if="promoMessage" class="text-xs mt-1.5" :class="promoApplied ? 'text-green-600' : 'text-red-500'" role="status">{{ promoMessage }}</p>
+                        <p v-if="form.errors.promo_code" class="text-red-500 text-xs mt-1">{{ form.errors.promo_code }}</p>
+                    </div>
+
                     <!-- Totals -->
                     <div class="space-y-2.5 text-sm">
                         <div class="flex justify-between text-[var(--ck-text-secondary)]"><span>Subtotal</span><span>{{ formatPrice(subtotal) }}</span></div>
+                        <div v-if="discount > 0" class="flex justify-between text-green-600"><span>Diskon promo</span><span>-{{ formatPrice(discount) }}</span></div>
                         <div class="flex justify-between text-[var(--ck-text-secondary)]"><span>PPN (11%)</span><span>{{ formatPrice(tax) }}</span></div>
                         <div class="flex justify-between text-[var(--ck-text-secondary)]"><span>Biaya Pengiriman</span><span>{{ formatPrice(deliveryFee) }}</span></div>
                         <hr class="border-[var(--ck-surface-border)]">
