@@ -1,11 +1,11 @@
 <div align="center">
 
-<img src="docs/banner.jpg" alt="CateringKu — Platform Pemesanan Katering Online" width="100%" />
+<img src="docs/banner.jpg" alt="CateringKu, platform pemesanan katering online" width="100%" />
 
 <br/>
 <br/>
 
-**Pesan katering untuk acara apa pun — dari pilih vendor sampai struk — dalam satu platform.**
+**Pesan katering untuk acara apa pun, dari memilih vendor sampai struk, dalam satu platform.**
 Tiga peran (Pelanggan, Vendor, Admin), kode promo, ulasan, dan pembayaran multi-provider.
 
 <br/>
@@ -34,6 +34,7 @@ Tiga peran (Pelanggan, Vendor, Admin), kode promo, ulasan, dan pembayaran multi-
 - [Perintah](#-perintah)
 - [Akun Demo](#-akun-demo)
 - [Arsitektur](#-arsitektur)
+- [Desain & Aksesibilitas](#-desain--aksesibilitas)
 - [Keamanan](#-keamanan)
 - [Testing & CI](#-testing--ci)
 - [Struktur Proyek](#-struktur-proyek)
@@ -48,20 +49,20 @@ Semua gambar di bawah adalah **tangkapan layar aplikasi yang berjalan** (data da
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/01-beranda.webp" alt="Beranda"/><br/><sub><b>Beranda</b> — pencarian vendor dan kategori</sub></td>
-    <td width="50%"><img src="docs/screenshots/02-cari-vendor.webp" alt="Cari vendor"/><br/><sub><b>Cari vendor</b> — filter kota, urut rating/terbaru/nama</sub></td>
+    <td width="50%"><img src="docs/screenshots/01-beranda.webp" alt="Beranda"/><br/><sub><b>Beranda</b>: pencarian vendor dan kategori</sub></td>
+    <td width="50%"><img src="docs/screenshots/02-cari-vendor.webp" alt="Cari vendor"/><br/><sub><b>Cari vendor</b>: filter kota, urut rating/terbaru/nama</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/03-detail-vendor.webp" alt="Detail vendor"/><br/><sub><b>Detail vendor</b> — menu, paket, dan ulasan</sub></td>
-    <td><img src="docs/screenshots/08-checkout.webp" alt="Checkout"/><br/><sub><b>Checkout</b> — kode promo, pembayaran multi-provider</sub></td>
+    <td><img src="docs/screenshots/03-detail-vendor.webp" alt="Detail vendor"/><br/><sub><b>Detail vendor</b>: menu, paket, dan ulasan</sub></td>
+    <td><img src="docs/screenshots/08-checkout.webp" alt="Checkout"/><br/><sub><b>Checkout</b>: kode promo, pembayaran multi-provider</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/07-keranjang.webp" alt="Keranjang"/><br/><sub><b>Keranjang</b> — satu keranjang per vendor</sub></td>
-    <td><img src="docs/screenshots/09-pesanan-saya.webp" alt="Pesanan saya"/><br/><sub><b>Pesanan saya</b> — status, struk, ulasan</sub></td>
+    <td><img src="docs/screenshots/07-keranjang.webp" alt="Keranjang"/><br/><sub><b>Keranjang</b>: satu keranjang per vendor</sub></td>
+    <td><img src="docs/screenshots/09-pesanan-saya.webp" alt="Pesanan saya"/><br/><sub><b>Pesanan saya</b>: status, struk, ulasan</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/10-dashboard-admin.webp" alt="Dashboard admin"/><br/><sub><b>Dashboard admin</b> — statistik, pembayaran tertunda</sub></td>
-    <td><img src="docs/screenshots/12-dashboard-vendor.webp" alt="Dashboard vendor"/><br/><sub><b>Dashboard vendor</b> — pesanan, pendapatan, rating</sub></td>
+    <td><img src="docs/screenshots/10-dashboard-admin.webp" alt="Dashboard admin"/><br/><sub><b>Dashboard admin</b>: statistik, pembayaran tertunda</sub></td>
+    <td><img src="docs/screenshots/12-dashboard-vendor.webp" alt="Dashboard vendor"/><br/><sub><b>Dashboard vendor</b>: pesanan, pendapatan, rating</sub></td>
   </tr>
 </table>
 
@@ -78,7 +79,7 @@ Semua gambar di bawah adalah **tangkapan layar aplikasi yang berjalan** (data da
 </details>
 
 <details>
-<summary><b>Desain awal (mockup)</b> — sebelum diimplementasikan</summary>
+<summary><b>Desain awal (mockup)</b>: sebelum diimplementasikan</summary>
 <br/>
 
 | | |
@@ -118,6 +119,17 @@ bash run.sh dev        # Windows: .\run.bat dev
 
 `setup` memasang dependensi, membuat `.env` dari `.env.example`, membuat `APP_KEY`, migrasi, dan mengisi data demo.
 Buka **http://localhost:8000**.
+
+**Kontak & media sosial** di footer dan halaman Kontak diambil dari `.env`. Selama kosong, bagian itu disembunyikan, jadi situs tidak pernah menampilkan nomor telepon karangan atau ikon sosial yang mengarah ke `#`.
+
+```dotenv
+CATERINGKU_CONTACT_EMAIL=halo@domainanda.id
+CATERINGKU_CONTACT_PHONE="0812-xxxx-xxxx"
+CATERINGKU_CONTACT_ADDRESS="Jl. ..., Kota"
+CATERINGKU_CONTACT_HOURS="Senin sampai Sabtu, 08.00 sampai 17.00"
+CATERINGKU_INSTAGRAM_URL=https://instagram.com/akunanda
+CATERINGKU_WHATSAPP_URL=https://wa.me/62812xxxxxxx
+```
 
 <details>
 <summary>Tanpa script (manual)</summary>
@@ -198,14 +210,30 @@ erDiagram
     ORDERS ||--o| PROMO_USAGE : "memakai"
 ```
 
-**Alur harga** — keranjang menyimpan *jumlah per tamu*; saat checkout jumlah dikali `num_people`.
+**Alur harga:** keranjang menyimpan *jumlah per tamu*; saat checkout jumlah dikali `num_people`.
 `subtotal − diskon promo → PPN 11% → + ongkir Rp 15.000 = total`. Semua dihitung di `app/Services/OrderPricing.php`, dipakai bersama oleh pratinjau promo dan checkout.
+
+---
+
+## 🎨 Desain & Aksesibilitas
+
+Arah desain mengikuti mockup awal di [`docs/design/`](docs/design): oranye CateringKu, Poppins untuk judul, dan kartu vendor yang hangat. UI diaudit dengan gerbang **antislop** (tanpa klaim palsu, angka tanpa sumber, link mati, atau em dash) dan **WCAG 2.1 AA**:
+
+| Keputusan | Alasan |
+|---|---|
+| Oranye brand untuk teks dan tombol digelapkan ke karat `#B8461F` | Putih di atas `#F5845C` hanya 2.5:1; `#B8461F` memberi 5.3:1 tanpa keluar dari keluarga warna mockup |
+| `#F5845C` tetap dipakai untuk teks di mode gelap | 6.5:1 di atas latar gelap |
+| Statistik di halaman Tentang dihitung langsung dari database | Tidak ada angka marketing tanpa sumber |
+| Placeholder vendor berupa monogram inisial | Tidak menulis klaim apa pun atas nama vendor |
+| Petak ikon dashboard memakai satu tint brand | Sebelumnya tiap kartu punya gradien pelangi berbeda |
+
+Diperiksa dengan browser otomatis di 22 halaman × mode terang/gelap × lebar 1440 px dan 360 px: tidak ada overflow horizontal, tidak ada error console, semua teks lolos kontras AA (kecuali tautan pagination nonaktif, yang dikecualikan WCAG). Semua kontrol punya nama aksesibel, semua field punya label, dan fokus keyboard selalu terlihat. Animasi berhenti saat `prefers-reduced-motion` aktif.
 
 ---
 
 ## 🔒 Keamanan
 
-- **Harga tidak pernah dipercaya dari browser** — subtotal, diskon, pajak, dan total dihitung ulang dari database saat checkout.
+- **Harga tidak pernah dipercaya dari browser.** Subtotal, diskon, pajak, dan total dihitung ulang dari database saat checkout.
 - **Promo**: validasi di server (masa berlaku, vendor, minimal order, satu kali per pelanggan), penghitung `used_count` atomik sehingga batas pemakaian tidak bisa dilampaui checkout paralel.
 - **Keranjang**: item harus milik vendor yang sama dan masih tersedia; jumlah dibatasi.
 - **Otorisasi**: pelanggan hanya melihat pesanannya, vendor hanya pesanan & menunya sendiri (diuji di `AccessControlTest`).
@@ -223,7 +251,7 @@ Menemukan celah? Buka [issue](https://github.com/zynxx24/CateringKu-ZynxWira-/is
 cd CateringKu && php artisan test
 ```
 
-**68 tes** (Pest): autentikasi, 2FA, pengaturan akun, keranjang, checkout, promo, dan kontrol akses antar-peran.
+**72 tes** (Pest): autentikasi, 2FA, pengaturan akun, keranjang, checkout, promo, kontrol akses antar-peran, filter kategori, statistik halaman Tentang, dan kontak dari konfigurasi.
 
 GitHub Actions ([`laravel.yml`](.github/workflows/laravel.yml)) menjalankan di setiap push/PR ke `main`:
 
@@ -261,7 +289,7 @@ GitHub Actions ([`laravel.yml`](.github/workflows/laravel.yml)) menjalankan di s
 
 1. Fork, lalu buat branch: `git checkout -b fitur/nama-fitur`
 2. Pastikan lolos sebelum commit: `composer lint` · `php artisan test` · `npm run types:check`
-3. Buka Pull Request ke `main` — CI akan berjalan otomatis.
+3. Buka Pull Request ke `main`; CI akan berjalan otomatis.
 
 ---
 
